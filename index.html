@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cyber Phoenix: Cosmic Flight (Web3 Arcade)</title>
+    <!-- Ethers.js for Web3 Blockchain Connection -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            background: #03030c;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            max-width: 960px;
+            height: 600px;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.25), 0 0 100px rgba(255, 170, 0, 0.15);
+            border: 2px solid #00f0ff;
+            border-radius: 12px;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #0d0b24 0%, #03030c 100%);
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+        }
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00f0ff;
+        }
+        .stat-box {
+            background: rgba(10, 15, 30, 0.75);
+            border: 1px solid rgba(0, 240, 255, 0.5);
+            padding: 6px 14px;
+            border-radius: 8px;
+            backdrop-filter: blur(8px);
+        }
+        .health-bar {
+            width: 140px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ff4444;
+            margin-top: 4px;
+        }
+        .health-fill {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff4444, #ffbb00);
+            transition: width 0.2s ease;
+        }
+        .wallet-pill {
+            background: rgba(130, 71, 229, 0.25);
+            border: 1px solid #8247e5;
+            color: #d1b9ff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            pointer-events: auto;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .wallet-pill:hover {
+            background: rgba(130, 71, 229, 0.45);
+            box-shadow: 0 0 15px rgba(130, 71, 229, 0.6);
+            transform: scale(1.03);
+        }
+        .wallet-pill.connected {
+            border-color: #00ff88;
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.15);
+        }
+        .screen-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 3, 12, 0.88);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.3s;
+        }
+        .hidden {
+            display: none !important;
+        }
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #00f0ff 0%, #ffaa00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+            letter-spacing: 3px;
+        }
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+            max-width: 520px;
+        }
+        .btn {
+            background: linear-gradient(90deg, #00f0ff, #ffaa00);
+            color: #03030c;
+            font-weight: 800;
+            border: none;
+            padding: 12px 36px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+            transition: transform 0.15s, box-shadow 0.15s;
+            margin: 6px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(255, 170, 0, 0.8);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #00f0ff;
+            border: 1px solid #00f0ff;
+            font-size: 0.9rem;
+            padding: 10px 20px;
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: rgba(0, 240, 255, 0.15);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+        .btn-twitter {
+            background: #1d9bf0;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 0 20px rgba(29, 155, 240, 0.5);
+            font-size: 0.95rem;
+            padding: 10px 24px;
+        }
+        .btn-twitter:hover {
+            background: #1a8cd8;
+            box-shadow: 0 0 30px rgba(29, 155, 240, 0.8);
+        }
+        .controls-hint {
+            margin-top: 15px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .controls-hint span {
+            color: #00f0ff;
+            font-weight: bold;
+        }
+        .item-inventory {
+            display: flex;
+            gap: 12px;
+            pointer-events: auto;
+        }
+        .item-btn {
+            background: rgba(10, 15, 30, 0.85);
+            border: 1px solid #ffaa00;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: #ffaa00;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .item-btn:hover {
+            background: rgba(255, 170, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);
+        }
+        .footer-bar {
+            margin-top: 12px;
+            font-size: 0.82rem;
+            color: #64748b;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .footer-bar a {
+            color: #00f0ff;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .footer-bar a:hover {
+            color: #ffaa00;
+            text-shadow: 0 0 10px #ffaa00;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="960" height="600"></canvas>
+
+        <div class="ui-layer">
+            <div class="hud-top">
+                <div class="stat-box">
+                    <div>SCORE: <span id="scoreText" style="color:#00f0ff;">0</span></div>
+                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">BEST: <span id="highScoreText">0</span></div>
+                </div>
+
+                <!-- WEB3 WALLET CONNECT PILL -->
+                <button class="wallet-pill" id="walletBtn" onclick="connectWallet()">
+                    <span id="walletIcon">🦊</span>
+                    <span id="walletText">CONNECT WALLET</span>
+                </button>
+
+                <div class="stat-box" style="text-align: right;">
+                    <div>HULL INTEGRITY</div>
+                    <div class="health-bar">
+                        <div class="health-fill" id="healthFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="item-inventory">
+                    <button class="item-btn" id="potionBtn" onclick="usePotion()">
+                        🧪 POTION (<span id="potionCount">2</span>) [1]
+                    </button>
+                    <button class="item-btn" id="shieldBtn" onclick="useShield()" style="border-color:#00f0ff; color:#00f0ff;">
+                        🛡️ SHIELD (<span id="shieldCount">1</span>) [2]
+                    </button>
+                </div>
+                <div class="stat-box" style="font-size:0.8rem; color:#94a3b8;">
+                    POLYGON SPEED: <span id="speedText" style="color:#ffaa00;">1.0x</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- START SCREEN -->
+        <div id="startScreen" class="screen-overlay">
+            <h1>CYBER PHOENIX</h1>
+            <p class="subtitle">Cosmic Flight • Genesis 1/1 Web3 Arcade on Polygon</p>
+            <button class="btn" onclick="startGame()">START FLIGHT</button>
+            <div class="controls-hint" style="margin-bottom: 12px;">
+                Controls: Press <span>SPACEBAR</span> or <span>CLICK / TAP</span> to ascend. Dodge Asteroids & Lasers!
+            </div>
+            <div style="background: rgba(255, 170, 0, 0.15); border: 1px dashed #ffaa00; border-radius: 8px; padding: 6px 14px; font-size: 0.85rem; color: #ffbb00; margin-bottom: 14px;">
+                ⚡ <strong>1,000+ SCORE CHALLENGE:</strong> Reach 1,000 points to unlock Golden Feather Revive & Leaderboard Glory!
+            </div>
+            <div>
+                <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank" class="btn btn-secondary">
+                    🦅 VIEW ON OPENSEA
+                </a>
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <div id="gameOverScreen" class="screen-overlay hidden">
+            <h1 style="background: linear-gradient(135deg, #ff4444 0%, #ffaa00 100%); -webkit-background-clip: text;">
+                MISSION FAILED
+            </h1>
+            <p class="subtitle" style="margin-bottom: 6px;">Your Cyber Phoenix collapsed into the quantum void.</p>
+            <div style="font-size: 1.5rem; margin-bottom: 14px; color:#00f0ff;">
+                FINAL SCORE: <span id="finalScore" style="color:#ffaa00; font-weight:800;">0</span>
+            </div>
+            
+            <!-- REVIVE BUTTON (ACTIVE WHEN SCORE >= 1000) -->
+            <div id="reviveBox" style="margin-bottom: 12px; display: none;">
+                <button class="btn" id="reviveBtn" onclick="reviveGame()" style="background: linear-gradient(90deg, #ffaa00, #ff0077); box-shadow: 0 0 30px rgba(255, 0, 119, 0.7);">
+                    🪶 USE GOLDEN FEATHER (CONTINUE FLIGHT)
+                </button>
+                <div style="font-size: 0.85rem; color: #ffaa00; margin-top: 4px;">
+                    ⭐ 1,000+ Reached! Golden Feather keeps your score alive!
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn" onclick="startGame()">RETRY FROM 0</button>
+                <button class="btn btn-twitter" onclick="shareOnTwitter()">
+                    𝕏 TWEET SCORE
+                </button>
+                <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank" class="btn btn-secondary">
+                    ⚡ GET POTIONS ON OPENSEA
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <span>Collection: <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank">Celestial Cyber Phoenix (Polygon)</a></span>
+        <span>•</span>
+        <span>Twitter: <a href="https://x.com/CelestialCyberP" target="_blank">@CelestialCyberP</a></span>
+        <span>•</span>
+        <span>Polygon ERC-1155 Web3 Arcade</span>
+    </div>
+
+    <script>
+        // Web3 Wallet & Polygon Configuration
+        const POLYGON_CHAIN_ID = '0x89'; // 137 in decimal
+        let userWalletAddress = null;
+        let web3Provider = null;
+
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') {
+                alert('MetaMask or Web3 wallet not detected! Please install MetaMask to connect your wallet.');
+                return;
+            }
+
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                if (accounts.length > 0) {
+                    userWalletAddress = accounts[0];
+                    updateWalletUI();
+
+                    // Check if on Polygon network
+                    const currentChain = await window.ethereum.request({ method: 'eth_chainId' });
+                    if (currentChain !== POLYGON_CHAIN_ID) {
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: POLYGON_CHAIN_ID }]
+                            });
+                        } catch (switchError) {
+                            // If Polygon isn't added, add it
+                            if (switchError.code === 4902) {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: POLYGON_CHAIN_ID,
+                                        chainName: 'Polygon Mainnet',
+                                        nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+                                        rpcUrls: ['https://polygon-rpc.com/'],
+                                        blockExplorerUrls: ['https://polygonscan.com/']
+                                    }]
+                                });
+                            }
+                        }
+                    }
+                    playSound('heal');
+                }
+            } catch (err) {
+                console.error('Wallet connection error:', err);
+            }
+        }
+
+        function updateWalletUI() {
+            const btn = document.getElementById('walletBtn');
+            const txt = document.getElementById('walletText');
+            if (userWalletAddress) {
+                const shortAddr = userWalletAddress.substring(0, 6) + '...' + userWalletAddress.substring(userWalletAddress.length - 4);
+                txt.innerText = shortAddr;
+                btn.classList.add('connected');
+                // Give connected player a bonus feather and potion!
+                phoenix.potions = Math.max(phoenix.potions, 3);
+                phoenix.feathers = Math.max(phoenix.feathers, 2);
+                updateHUD();
+            }
+        }
+
+        // Auto-check existing connection on page load
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.request({ method: 'eth_accounts' }).then(accounts => {
+                if (accounts.length > 0) {
+                    userWalletAddress = accounts[0];
+                    updateWalletUI();
+                }
+            }).catch(() => {});
+        }
+
+        // Share High Score on X (Twitter)
+        function shareOnTwitter() {
+            const currentScore = Math.floor(score);
+            const text = encodeURIComponent(
+                `I just scored ${currentScore} on Cyber Phoenix Cosmic Flight! 🦅⚡\n` +
+                `Can you beat 1,000+ points and unlock the Golden Feather?\n\n` +
+                `Genesis 1/1 Arcade on Polygon by @CelestialCyberP 🔥\n`
+            );
+            const url = encodeURIComponent('https://opensea.io/collection/celestial-cyber-phoenix');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        // Web Audio Synthesizer for Retro Cyber SFX
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const now = audioCtx.currentTime;
+
+                if (type === 'flap') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(320, now + 0.12);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'coin') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(783.99, now + 0.08);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'hit') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'heal') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(900, now + 0.3);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                }
+            } catch (e) {}
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game State
+        let isPlaying = false;
+        let score = 0;
+        let highScore = localStorage.getItem('cyber_phoenix_high') || 0;
+        document.getElementById('highScoreText').innerText = highScore;
+
+        let gameSpeed = 3.5;
+        let frameCount = 0;
+
+        // Player (Phoenix)
+        const phoenix = {
+            x: 140,
+            y: 280,
+            vy: 0,
+            gravity: 0.38,
+            lift: -7.2,
+            size: 32,
+            health: 100,
+            wingAngle: 0,
+            shieldTimer: 0,
+            potions: 2,
+            shields: 1,
+            feathers: 1
+        };
+
+        // Stars & Background Particles
+        const stars = [];
+        for (let i = 0; i < 90; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speed: Math.random() * 2 + 0.5,
+                color: Math.random() > 0.5 ? '#00f0ff' : '#ffaa00'
+            });
+        }
+
+        // Obstacles & Items
+        let obstacles = [];
+        let items = [];
+        let particles = [];
+
+        function resetGame() {
+            score = 0;
+            gameSpeed = 3.5;
+            frameCount = 0;
+            phoenix.y = canvas.height / 2;
+            phoenix.vy = 0;
+            phoenix.health = 100;
+            phoenix.shieldTimer = 0;
+            phoenix.potions = userWalletAddress ? 3 : 2;
+            phoenix.shields = 1;
+            obstacles = [];
+            items = [];
+            particles = [];
+            updateHUD();
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreText').innerText = Math.floor(score);
+            document.getElementById('healthFill').style.width = Math.max(0, phoenix.health) + '%';
+            document.getElementById('potionCount').innerText = phoenix.potions;
+            document.getElementById('shieldCount').innerText = phoenix.shields;
+            document.getElementById('speedText').innerText = (gameSpeed / 3.5).toFixed(1) + 'x';
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            resetGame();
+            isPlaying = true;
+            playSound('heal');
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            playSound('hit');
+            if (score > highScore) {
+                highScore = Math.floor(score);
+                localStorage.setItem('cyber_phoenix_high', highScore);
+                document.getElementById('highScoreText').innerText = highScore;
+            }
+            document.getElementById('finalScore').innerText = Math.floor(score);
+            
+            // Revive unlocked only if score >= 1,000!
+            const reviveBox = document.getElementById('reviveBox');
+            if (score >= 1000) {
+                reviveBox.style.display = 'block';
+            } else {
+                reviveBox.style.display = 'none';
+            }
+            
+            document.getElementById('gameOverScreen').classList.remove('hidden');
+        }
+
+        function reviveGame() {
+            document.getElementById('gameOverScreen').classList.add('hidden');
+            phoenix.y = canvas.height / 2;
+            phoenix.vy = 0;
+            phoenix.health = 100;
+            phoenix.shieldTimer = 360; // 6s of invulnerability after revive
+            obstacles = []; // clear immediate traps
+            isPlaying = true;
+            playSound('heal');
+            spawnExplosion(phoenix.x, phoenix.y, '#ffaa00', 35);
+        }
+
+        function usePotion() {
+            if (phoenix.potions > 0 && phoenix.health < 100) {
+                phoenix.potions--;
+                phoenix.health = Math.min(100, phoenix.health + 45);
+                playSound('heal');
+                spawnExplosion(phoenix.x, phoenix.y, '#00f0ff', 20);
+                updateHUD();
+            }
+        }
+
+        function useShield() {
+            if (phoenix.shields > 0 && phoenix.shieldTimer <= 0) {
+                phoenix.shields--;
+                phoenix.shieldTimer = 300; // 5 seconds at 60fps
+                playSound('heal');
+                updateHUD();
+            }
+        }
+
+        function flap() {
+            if (!isPlaying) return;
+            phoenix.vy = phoenix.lift;
+            playSound('flap');
+            for (let i = 0; i < 5; i++) {
+                particles.push({
+                    x: phoenix.x - 15,
+                    y: phoenix.y + (Math.random() * 10 - 5),
+                    vx: -(Math.random() * 3 + 2),
+                    vy: Math.random() * 2 - 1,
+                    size: Math.random() * 4 + 2,
+                    color: Math.random() > 0.5 ? '#ffaa00' : '#00f0ff',
+                    life: 25
+                });
+            }
+        }
+
+        // Input listeners
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                flap();
+            } else if (e.key === '1') {
+                usePotion();
+            } else if (e.key === '2') {
+                useShield();
+            }
+        });
+
+        canvas.addEventListener('pointerdown', (e) => {
+            flap();
+        });
+
+        function spawnExplosion(x, y, color, count = 15) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const spd = Math.random() * 4 + 1;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * spd,
+                    vy: Math.sin(angle) * spd,
+                    size: Math.random() * 5 + 2,
+                    color: color,
+                    life: 30
+                });
+            }
+        }
+
+        // Main Loop
+        function loop() {
+            requestAnimationFrame(loop);
+
+            // Clear Background
+            ctx.fillStyle = '#050414';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Update & Draw Stars
+            for (let s of stars) {
+                s.x -= s.speed * (isPlaying ? (gameSpeed / 3) : 1);
+                if (s.x < 0) s.x = canvas.width;
+                ctx.fillStyle = s.color;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (isPlaying) {
+                frameCount++;
+                score += 0.1;
+                if (frameCount % 400 === 0) gameSpeed += 0.25;
+
+                // Physics
+                phoenix.vy += phoenix.gravity;
+                phoenix.y += phoenix.vy;
+                phoenix.wingAngle = Math.sin(frameCount * 0.25) * 12;
+
+                if (phoenix.shieldTimer > 0) phoenix.shieldTimer--;
+
+                // Boundaries
+                if (phoenix.y < 20) {
+                    phoenix.y = 20;
+                    phoenix.vy = 0;
+                }
+                if (phoenix.y > canvas.height - 20) {
+                    phoenix.health -= 1.5;
+                    phoenix.vy = -3;
+                    playSound('hit');
+                    spawnExplosion(phoenix.x, canvas.height - 10, '#ff4444', 6);
+                    if (phoenix.health <= 0) gameOver();
+                }
+
+                // Spawn Obstacles (Asteroids / Plasma Gates)
+                if (frameCount % 100 === 0) {
+                    const isGate = Math.random() > 0.45;
+                    if (isGate) {
+                        const gap = 160;
+                        const topH = Math.random() * (canvas.height - gap - 100) + 50;
+                        obstacles.push({
+                            type: 'gate',
+                            x: canvas.width,
+                            topH: topH,
+                            bottomY: topH + gap,
+                            width: 32,
+                            passed: false
+                        });
+                    } else {
+                        obstacles.push({
+                            type: 'asteroid',
+                            x: canvas.width,
+                            y: Math.random() * (canvas.height - 80) + 40,
+                            radius: Math.random() * 18 + 16,
+                            speedMult: Math.random() * 0.5 + 0.8
+                        });
+                    }
+                }
+
+                // Spawn Collectibles (Crystals & Potions)
+                if (frameCount % 180 === 0) {
+                    const isPotion = Math.random() > 0.75;
+                    items.push({
+                        type: isPotion ? 'potion' : 'crystal',
+                        x: canvas.width,
+                        y: Math.random() * (canvas.height - 120) + 60,
+                        size: 16
+                    });
+                }
+
+                // Update Obstacles
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    const ob = obstacles[i];
+                    ob.x -= gameSpeed;
+
+                    // Collision check
+                    if (ob.type === 'asteroid') {
+                        const dx = ob.x - phoenix.x;
+                        const dy = ob.y - phoenix.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < ob.radius + phoenix.size * 0.6) {
+                            if (phoenix.shieldTimer > 0) {
+                                spawnExplosion(ob.x, ob.y, '#00f0ff', 12);
+                                obstacles.splice(i, 1);
+                                playSound('coin');
+                                continue;
+                            } else {
+                                phoenix.health -= 25;
+                                spawnExplosion(ob.x, ob.y, '#ff4444', 15);
+                                playSound('hit');
+                                obstacles.splice(i, 1);
+                                if (phoenix.health <= 0) gameOver();
+                                continue;
+                            }
+                        }
+                    } else if (ob.type === 'gate') {
+                        if (phoenix.x + 15 > ob.x && phoenix.x - 15 < ob.x + ob.width) {
+                            if (phoenix.y - 12 < ob.topH || phoenix.y + 12 > ob.bottomY) {
+                                if (phoenix.shieldTimer > 0) {
+                                    // Shield protects
+                                } else {
+                                    phoenix.health -= 20;
+                                    playSound('hit');
+                                    spawnExplosion(phoenix.x, phoenix.y, '#ffaa00', 8);
+                                    if (phoenix.health <= 0) gameOver();
+                                }
+                            }
+                        }
+                    }
+
+                    if (ob.x < -60) obstacles.splice(i, 1);
+                }
+
+                // Update Items
+                for (let i = items.length - 1; i >= 0; i--) {
+                    const it = items[i];
+                    it.x -= gameSpeed;
+
+                    const dx = it.x - phoenix.x;
+                    const dy = it.y - phoenix.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < it.size + phoenix.size) {
+                        if (it.type === 'crystal') {
+                            score += 25;
+                            playSound('coin');
+                            spawnExplosion(it.x, it.y, '#00f0ff', 10);
+                        } else if (it.type === 'potion') {
+                            phoenix.health = Math.min(100, phoenix.health + 30);
+                            playSound('heal');
+                            spawnExplosion(it.x, it.y, '#ffaa00', 14);
+                        }
+                        items.splice(i, 1);
+                        continue;
+                    }
+
+                    if (it.x < -30) items.splice(i, 1);
+                }
+
+                updateHUD();
+            }
+
+            // Draw Obstacles
+            for (let ob of obstacles) {
+                if (ob.type === 'asteroid') {
+                    ctx.save();
+                    ctx.fillStyle = '#2d1f3d';
+                    ctx.strokeStyle = '#ff4444';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(ob.x, ob.y, ob.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                } else if (ob.type === 'gate') {
+                    ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
+                    ctx.strokeStyle = '#00f0ff';
+                    ctx.lineWidth = 3;
+
+                    // Top beam
+                    ctx.fillRect(ob.x, 0, ob.width, ob.topH);
+                    ctx.strokeRect(ob.x, 0, ob.width, ob.topH);
+
+                    // Bottom beam
+                    ctx.fillRect(ob.x, ob.bottomY, ob.width, canvas.height - ob.bottomY);
+                    ctx.strokeRect(ob.x, ob.bottomY, ob.width, canvas.height - ob.bottomY);
+                }
+            }
+
+            // Draw Items
+            for (let it of items) {
+                ctx.save();
+                if (it.type === 'crystal') {
+                    ctx.fillStyle = '#00f0ff';
+                    ctx.shadowColor = '#00f0ff';
+                    ctx.shadowBlur = 15;
+                    ctx.beginPath();
+                    ctx.moveTo(it.x, it.y - it.size);
+                    ctx.lineTo(it.x + it.size, it.y);
+                    ctx.lineTo(it.x, it.y + it.size);
+                    ctx.lineTo(it.x - it.size, it.y);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    ctx.fillStyle = '#ffaa00';
+                    ctx.shadowColor = '#ffaa00';
+                    ctx.shadowBlur = 15;
+                    ctx.beginPath();
+                    ctx.arc(it.x, it.y, it.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '14px Arial';
+                    ctx.fillText('🧪', it.x - 7, it.y + 5);
+                }
+                ctx.restore();
+            }
+
+            // Draw Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life--;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life / 30;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            // Draw Celestial Cyber Phoenix
+            ctx.save();
+            ctx.translate(phoenix.x, phoenix.y);
+            ctx.rotate((phoenix.vy * 0.04));
+
+            // Engine Trail / Glow
+            const glowGrad = ctx.createRadialGradient(-15, 0, 2, -15, 0, 25);
+            glowGrad.addColorStop(0, '#ffaa00');
+            glowGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = glowGrad;
+            ctx.fillRect(-40, -25, 40, 50);
+
+            // Shield Bubble
+            if (phoenix.shieldTimer > 0) {
+                ctx.strokeStyle = '#00f0ff';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = '#00f0ff';
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                ctx.arc(0, 0, phoenix.size + 14, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Cyber Body (Gold & Obsidian)
+            ctx.fillStyle = '#1a1829';
+            ctx.strokeStyle = '#ffaa00';
+            ctx.lineWidth = 2;
+
+            // Wings
+            ctx.save();
+            ctx.rotate((phoenix.wingAngle * Math.PI) / 180);
+            ctx.fillStyle = '#ffaa00';
+            ctx.beginPath();
+            ctx.moveTo(-10, -5);
+            ctx.lineTo(10, -28);
+            ctx.lineTo(-20, -18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            // Lower Wing
+            ctx.save();
+            ctx.rotate((-phoenix.wingAngle * Math.PI) / 180);
+            ctx.fillStyle = '#00f0ff';
+            ctx.beginPath();
+            ctx.moveTo(-10, 5);
+            ctx.lineTo(10, 28);
+            ctx.lineTo(-20, 18);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+
+            // Core Torso
+            ctx.fillStyle = '#0e0d1a';
+            ctx.strokeStyle = '#ffaa00';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 22, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Beak / Head
+            ctx.fillStyle = '#00f0ff';
+            ctx.beginPath();
+            ctx.moveTo(18, -4);
+            ctx.lineTo(30, 0);
+            ctx.lineTo(18, 4);
+            ctx.closePath();
+            ctx.fill();
+
+            // Eye
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(15, -2, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Initialize Loop
+        loop();
+    </script>
+</body>
+</html>
