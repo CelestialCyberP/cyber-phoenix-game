@@ -242,6 +242,105 @@
             color: #ffaa00;
             text-shadow: 0 0 10px #ffaa00;
         }
+
+        /* 64 TOURNAMENT ARENA & 100-PLAYER LEADERBOARD STYLING */
+        @keyframes tickerScroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .ticker-wrap {
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.4);
+            border-radius: 20px;
+            padding: 4px 0;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+        }
+        .ticker-content {
+            display: inline-block;
+            animation: tickerScroll 24s linear infinite;
+            font-size: 0.76rem;
+            color: #00f0ff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .ticker-wrap:hover .ticker-content {
+            animation-play-state: paused;
+        }
+        .arena-tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #94a3b8;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .arena-tab-btn.active {
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.3), rgba(255, 170, 0, 0.3));
+            border-color: #ffaa00;
+            color: #ffaa00;
+            box-shadow: 0 0 12px rgba(255, 170, 0, 0.4);
+        }
+        .room-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 5px 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.72rem;
+            transition: 0.2s;
+            color: #cbd5e1;
+        }
+        .room-pill:hover {
+            border-color: #00f0ff;
+            background: rgba(0, 240, 255, 0.12);
+        }
+        .room-pill.active {
+            border-color: #ffaa00;
+            background: rgba(255, 170, 0, 0.22);
+            color: #ffaa00;
+            font-weight: bold;
+            box-shadow: 0 0 12px rgba(255, 170, 0, 0.4);
+        }
+        .lb-table-container {
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(5, 5, 18, 0.8);
+        }
+        .lb-row {
+            display: grid;
+            grid-template-columns: 46px 1fr 75px 115px;
+            align-items: center;
+            padding: 4px 8px;
+            font-size: 0.72rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .lb-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .lb-row.winner {
+            background: rgba(0, 255, 136, 0.05);
+        }
+        .lb-row.user-row {
+            background: rgba(255, 170, 0, 0.2) !important;
+            border: 1px solid #ffaa00;
+            font-weight: bold;
+        }
+        .blur-lb {
+            filter: blur(4.5px);
+            user-select: none;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -286,20 +385,337 @@
         </div>
 
         <!-- START SCREEN -->
-        <div id="startScreen" class="screen-overlay">
-            <h1>CYBER PHOENIX</h1>
-            <p class="subtitle">Cosmic Flight • Genesis 1/1 Web3 Arcade on Polygon</p>
-            <button class="btn" onclick="startGame()">START FLIGHT</button>
-            <div class="controls-hint" style="margin-bottom: 12px;">
+        <div id="startScreen" class="screen-overlay" style="padding:12px;">
+            
+            <!-- LIVE PAYOUT TICKER MARQUEE -->
+            <div class="ticker-wrap">
+                <div class="ticker-content">
+                    ⚡ 🏆 TOURNAMENT ARENAS LIVE ($1,000 WINNING) • RECENT PAYOUTS: 0x81b... +$1,000.00 • 0x4f2... +$100.00 • 0x11c... +$50.00 • 🛡️ GUARANTEED WINNING RANK ON POLYGON • INSTANT WALLET CASHOUT! ⚡
+                </div>
+            </div>
+
+            <h1 style="font-size:2.2rem; margin-bottom:2px;">CYBER PHOENIX</h1>
+            <p class="subtitle" style="font-size:0.88rem; margin-bottom:8px;">Cosmic Flight • Genesis 1/1 Web3 Arcade on Polygon</p>
+            
+            <!-- DAILY ROUNDS LIVE TIMER BAR -->
+            <div style="background:rgba(0, 240, 255, 0.12); border:1px solid #00f0ff; border-radius:20px; padding:4px 14px; font-size:0.76rem; color:#00f0ff; margin-bottom:8px; display:inline-flex; align-items:center; gap:8px;">
+                <span style="color:#ffaa00;">🔴 LIVE</span>
+                <span id="activeRoundTitle">SESSION 3 (ACTIVE ARENAS)</span>
+                <span>•</span>
+                <span>ENDS IN: <strong id="roundCountdown" style="color:#ffea00; font-family:monospace; font-size:0.84rem;">02:44:19</strong></span>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+                <button class="btn" onclick="startGame()" style="padding:9px 24px; font-size:0.95rem;">▶ FREE FLIGHT</button>
+                <button class="btn" onclick="openTournamentModal()" style="background:linear-gradient(90deg, #ffd700, #ff0077); box-shadow:0 0 25px rgba(255, 215, 0, 0.8); padding:9px 22px; font-size:0.95rem; font-weight:800; color:#000;">
+                    🏆 TOURNAMENT (WIN $1,000)
+                </button>
+            </div>
+
+            <!-- TOURNAMENT MINI HIGHLIGHT BAR -->
+            <div onclick="openTournamentModal()" style="cursor:pointer; background:rgba(255, 215, 0, 0.12); border:1px solid #ffd700; border-radius:8px; padding:6px 14px; font-size:0.78rem; color:#ffbb00; margin-bottom:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:center; box-shadow:0 0 15px rgba(255,215,0,0.25);">
+                <span style="color:#ffd700; font-weight:800; background:rgba(255,215,0,0.2); padding:2px 8px; border-radius:10px;">👑 $100 ENTRY (WIN $1,000)</span>
+                <span>•</span>
+                <span>🥉 $1 (Win $12)</span>
+                <span>•</span>
+                <span>🥈 $5 (Win $50)</span>
+                <span>•</span>
+                <span>🥇 $10 (Win $100)</span>
+                <span>•</span>
+                <span>💎 $50 (Win $500)</span>
+                <span style="color:#00f0ff; text-decoration:underline; font-weight:bold;">[Join $1,000 Arena]</span>
+            </div>
+
+            <div class="controls-hint" style="margin-bottom: 8px; font-size:0.8rem;">
                 Controls: Press <span>SPACEBAR</span> or <span>CLICK / TAP</span> to ascend. Dodge Asteroids & Lasers!
             </div>
-            <div style="background: rgba(255, 170, 0, 0.15); border: 1px dashed #ffaa00; border-radius: 8px; padding: 6px 14px; font-size: 0.85rem; color: #ffbb00; margin-bottom: 14px;">
+            
+            <div style="background: rgba(255, 170, 0, 0.12); border: 1px dashed #ffaa00; border-radius: 8px; padding: 4px 12px; font-size: 0.8rem; color: #ffbb00; margin-bottom: 10px;">
                 ⚡ <strong>1,000+ SCORE CHALLENGE:</strong> Reach 1,000 points to unlock Golden Feather Revive & Leaderboard Glory!
             </div>
-            <div>
-                <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank" class="btn btn-secondary">
-                    🦅 VIEW ON OPENSEA
-                </a>
+
+            <!-- SCORE BOOST SELECTOR -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px; width:100%;">
+                <div style="font-size:0.78rem; color:#94a3b8; letter-spacing:1px;">⚡ CHOOSE YOUR POWER-UP MODE:</div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                    <button onclick="setBoostMode('normal')" id="modeNormal"
+                        style="background:rgba(0,240,255,0.15);border:2px solid #00f0ff;color:#00f0ff;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.78rem;transition:0.2s;">
+                        🎮 NORMAL
+                    </button>
+                    <button onclick="setBoostMode('coin')" id="modeCoin"
+                        style="background:rgba(255,170,0,0.15);border:2px solid #ffaa00;color:#ffaa00;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.78rem;transition:0.2s;">
+                        🪙 COIN RUSH (+10/coin)
+                    </button>
+                    <button onclick="setBoostMode('turbo')" id="modeTurbo"
+                        style="background:rgba(255,0,119,0.15);border:2px solid #ff0077;color:#ff88bb;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.78rem;transition:0.2s;">
+                        🚀 TURBO (2x Score)
+                    </button>
+                    <button onclick="setBoostMode('quantum')" id="modeQuantum"
+                        style="background:rgba(217,70,239,0.2);border:2px solid #d946ef;color:#f0abfc;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.78rem;transition:0.2s;">
+                        💎 QUANTUM 2.3x ($5 NFT)
+                    </button>
+                </div>
+                <div id="boostLabel" style="font-size:0.75rem;color:#64748b;">Mode: NORMAL</div>
+                <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank"
+                    style="font-size:0.74rem;color:#8247e5;text-decoration:none;opacity:0.75;">🦅 VIEW ALL GAME NFTS ON OPENSEA</a>
+            </div>
+        </div>
+
+        <!-- TOURNAMENT ARENAS & 100-PLAYER SCOREBOARD MODAL -->
+        <div id="tournamentModal" class="screen-overlay hidden" style="background:rgba(3, 3, 14, 0.96); z-index:999; padding:10px; overflow-y:auto;">
+            <div style="background:radial-gradient(circle at center, #15103a 0%, #08061a 100%); border:2px solid #ffaa00; border-radius:14px; padding:16px; max-width:580px; width:96%; box-shadow:0 0 45px rgba(255, 170, 0, 0.45); max-height:92vh; overflow-y:auto;">
+                
+                <!-- MODAL HEADER -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; flex-wrap:wrap; gap:6px;">
+                    <h2 style="color:#ffaa00; font-size:1.35rem; margin:0; text-shadow:0 0 15px rgba(255,170,0,0.7); display:flex; align-items:center; gap:8px;">
+                        <span>🏆 TOURNAMENT ARENAS ($1,000 WINNING)</span>
+                    </h2>
+                    <span style="background:rgba(0,255,136,0.15); border:1px solid #00ff88; color:#00ff88; padding:3px 10px; border-radius:12px; font-size:0.7rem; font-weight:bold;">
+                        ⚡ 5 TIERS • 4 ROUNDS DAILY
+                    </span>
+                </div>
+                <p style="color:#94a3b8; font-size:0.76rem; margin-bottom:8px; text-align:left;">
+                    5 Tiers ($1, $5, $10, $50, $100) • 4 Daily Rounds • 100 Players / Tournament • Guaranteed Winning Rank • Instant Wallet Payout
+                </p>
+
+                <!-- STEP 1: 5 ARENA TIERS SELECTOR -->
+                <div style="margin-bottom:8px; text-align:left;">
+                    <div style="font-size:0.72rem; color:#00f0ff; font-weight:bold; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>🎯 1. CHOOSE ENTRY TIER ($1, $5, $10, $50, $100):</span>
+                        <span style="color:#ffd700; font-size:0.68rem; font-weight:bold;">👑 WIN UP TO $1,000</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:4px;">
+                        <button id="tierTab0" onclick="selectTier(0)" class="arena-tab-btn active">
+                            🥉 $1 ENTRY<br><span style="color:#00ff88;font-size:0.65rem;">WIN $12</span>
+                        </button>
+                        <button id="tierTab1" onclick="selectTier(1)" class="arena-tab-btn">
+                            🥈 $5 ENTRY<br><span style="color:#00ff88;font-size:0.65rem;">WIN $50</span>
+                        </button>
+                        <button id="tierTab2" onclick="selectTier(2)" class="arena-tab-btn">
+                            🥇 $10 ENTRY<br><span style="color:#00ff88;font-size:0.65rem;">WIN $100</span>
+                        </button>
+                        <button id="tierTab3" onclick="selectTier(3)" class="arena-tab-btn">
+                            💎 $50 ENTRY<br><span style="color:#00ff88;font-size:0.65rem;">WIN $500</span>
+                        </button>
+                        <button id="tierTab4" onclick="selectTier(4)" class="arena-tab-btn" style="border-color:#ffd700; background:rgba(255,215,0,0.12);">
+                            👑 $100 ENTRY<br><span style="color:#ffd700;font-size:0.65rem;font-weight:bold;">WIN $1,000</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: 4 DAILY TIMINGS (SESSION SELECTOR) -->
+                <div style="margin-bottom:10px; text-align:left;">
+                    <div style="font-size:0.72rem; color:#00f0ff; font-weight:bold; margin-bottom:4px; display:flex; justify-content:space-between;">
+                        <span>⏰ 2. CHOOSE DAILY TIMING (4 ROUNDS PER DAY):</span>
+                        <span id="activeSessionBadge" style="color:#ffd700; font-size:0.7rem;">● LIVE</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+                        <button id="sessionBtn0" onclick="selectSession(0)" class="arena-tab-btn active">
+                            🌅 Round 1: 05:30 - 11:30 AM IST
+                        </button>
+                        <button id="sessionBtn1" onclick="selectSession(1)" class="arena-tab-btn">
+                            ☀️ Round 2: 11:30 AM - 05:30 PM IST
+                        </button>
+                        <button id="sessionBtn2" onclick="selectSession(2)" class="arena-tab-btn">
+                            🌆 Round 3: 05:30 - 11:30 PM IST
+                        </button>
+                        <button id="sessionBtn3" onclick="selectSession(3)" class="arena-tab-btn">
+                            🌙 Round 4: 11:30 PM - 05:30 AM IST
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MAIN VIEW SWITCH TABS -->
+                <div style="display:flex; gap:6px; margin-bottom:10px;">
+                    <button id="viewTabPrizes" onclick="switchMainTab('prizes')" class="arena-tab-btn active" style="flex:1; padding:7px; font-size:0.78rem;">
+                        🎯 1. PRIZES & ENROLLMENT
+                    </button>
+                    <button id="viewTabLeaderboard" onclick="switchMainTab('leaderboard')" class="arena-tab-btn" style="flex:1; padding:7px; font-size:0.78rem;">
+                        📊 2. 100-PLAYER LIVE WINNING REPORT <span id="lbLockIcon">🔒</span>
+                    </button>
+                </div>
+
+                <!-- VIEW 1: PRIZES & ENROLLMENT VIEW -->
+                <div id="prizesViewContainer">
+                    <!-- DYNAMIC PRIZE POOL BREAKDOWN FOR SELECTED TIER & TIMING -->
+                    <div style="background:rgba(255, 255, 255, 0.04); border:1px solid rgba(255, 170, 0, 0.35); border-radius:10px; padding:10px 14px; margin-bottom:10px; text-align:left; font-size:0.82rem;">
+                        <div style="display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-weight:bold;">
+                            <span>🎟️ Selected Arena Entry Fee:</span>
+                            <span id="tierFeeText" style="color:#00f0ff; font-size:0.95rem;">$1.00 USD</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:3px 0; color:#ffbb00; font-weight:bold;">
+                            <span>👥 Player Cap:</span>
+                            <span>MAX 100 PLAYERS (GUARANTEED WINNING RANK!)</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:4px 0; color:#ffd700; font-weight:bold;">
+                            <span>🥇 1st Rank Prize:</span>
+                            <span id="tierP1Text" style="font-size:1.05rem;">$12.00 USD (12x Return!)</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:3px 0; color:#e2e8f0; font-weight:bold;">
+                            <span>🥈 2nd Rank Prize:</span>
+                            <span id="tierP2Text">$8.00 USD (8x Return!)</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:3px 0; color:#cd7f32; font-weight:bold;">
+                            <span>🥉 3rd Rank Prize:</span>
+                            <span id="tierP3Text">$3.00 USD (3x Return!)</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:4px 0; color:#00ff88; font-weight:bold; background:rgba(0,255,136,0.1); border-radius:6px; padding:4px 8px; margin-top:2px;">
+                            <span>🔥 4th to 50th Rank (47 Players):</span>
+                            <span id="tierPBackText">$1.00 Each (Guaranteed Cash Back!)</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:4px 0; color:#00f0ff; font-size:0.8rem; margin-top:4px; border-top:1px dashed rgba(255,255,255,0.1); font-weight:bold;">
+                            <span>🏆 Total Tournament Prize Pool:</span>
+                            <span id="tierPoolText" style="color:#ffd700;">$70.00 USD Distributed Instantly</span>
+                        </div>
+                    </div>
+
+                    <!-- SELECTED ENROLLMENT DETAILS -->
+                    <div style="background:rgba(255, 170, 0, 0.12); border:1px solid #ffaa00; border-radius:8px; padding:8px 12px; margin-bottom:10px; text-align:left;">
+                        <div style="font-size:0.75rem; color:#00f0ff; font-weight:bold; letter-spacing:1px;">🎯 YOU SELECTED TO ENROLL IN:</div>
+                        <div id="enrollingSlotDetail" style="font-size:0.88rem; font-weight:bold; color:#fff; margin:3px 0;">BRONZE ARENA ($1 ENTRY) • Round 1 (05:30 - 11:30 AM)</div>
+                        <div style="font-size:0.74rem; color:#cbd5e1;">
+                            ⏳ Arena Closes in: <span id="enrollingSlotTimer" style="color:#00ff88; font-weight:bold; font-family:monospace;">--:--:--</span>
+                            <span> • Instant On-Chain Payout to your wallet!</span>
+                        </div>
+                    </div>
+
+                    <!-- INSTANT WINNING RECEIVE BADGE -->
+                    <div style="background:rgba(0, 255, 136, 0.08); border:1px solid #00ff88; border-radius:8px; padding:8px 12px; font-size:0.78rem; color:#d1ffea; margin-bottom:10px; text-align:left;">
+                        <div style="color:#00ff88; font-weight:bold; display:flex; align-items:center; gap:6px;">
+                            <span>⚡ INSTANT WINNING AMOUNT RECEIVED AFTER GAME COMPLETES!</span>
+                        </div>
+                        <div style="color:#cbd5e1; margin-top:2px; font-size:0.75rem;">
+                            Winnings are sent directly to your connected MetaMask wallet immediately as the session ends. No waiting, no manual withdrawal needed!
+                        </div>
+                    </div>
+
+                    <!-- NOTIFICATION ALERT SWITCH -->
+                    <div style="background:rgba(255, 170, 0, 0.1); border:1px solid rgba(255,170,0,0.5); border-radius:8px; padding:8px 12px; margin-bottom:10px; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="color:#ffaa00; font-weight:bold; font-size:0.78rem;">🔔 TOURNAMENT START NOTIFICATION</div>
+                            <div style="color:#94a3b8; font-size:0.72rem;">Get an automatic alert 15 minutes before your arena ends!</div>
+                        </div>
+                        <button id="notifyBtn" onclick="toggleTournamentNotifications()" style="background:rgba(0, 240, 255, 0.2); border:1px solid #00f0ff; color:#00f0ff; padding:5px 12px; border-radius:14px; font-size:0.75rem; cursor:pointer; font-weight:bold; transition:0.2s;">
+                            🔔 TURN ON
+                        </button>
+                    </div>
+
+                    <div id="tournamentStatusBox" style="background:rgba(0,240,255,0.1); border:1px solid #00f0ff; border-radius:8px; padding:8px 12px; font-size:0.78rem; color:#d1f4ff; margin-bottom:10px;">
+                        ⚡ <strong>Automated Payout:</strong> Connect MetaMask to enter the verified on-chain prize pool!
+                    </div>
+
+                    <!-- NFT-GATED PASS ACTION SECTION -->
+                    <div style="background:rgba(130, 71, 229, 0.18); border:2px solid #8247e5; border-radius:10px; padding:10px 14px; margin-bottom:12px; text-align:left; font-size:0.8rem;">
+                        <div style="color:#d1b9ff; font-weight:bold; display:flex; justify-content:space-between; align-items:center;">
+                            <span>🎟️ STEP 1: TOURNAMENT PASS NFT (<span id="nftPassFeeLabel">$1.00</span>)</span>
+                            <span id="nftPassBadge" style="background:#8247e5; color:#fff; padding:2px 8px; border-radius:10px; font-size:0.7rem;">ERC-1155 VERIFIED</span>
+                        </div>
+                        <div style="color:#e2e8f0; margin-top:4px;">
+                            ⚠️ <strong>Only Pass holders can enroll & view live scores!</strong> Buy your Pass NFT on OpenSea or enroll directly with MetaMask to compete for instant prizes.
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                        <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank" class="btn" style="background:linear-gradient(90deg, #8247e5, #00f0ff); color:#fff; font-size:0.85rem; padding:10px 18px; text-decoration:none; box-shadow:0 0 20px rgba(130,71,229,0.5);">
+                            🛒 1. BUY PASS ON OPENSEA
+                        </a>
+                        <button class="btn" id="registerBtn" onclick="registerTournament()" style="background:linear-gradient(90deg, #ffaa00, #ff0077); font-size:0.85rem; padding:10px 18px;">
+                            ⚡ 2. ENROLL VIA METAMASK (<span id="regBtnFeeText">$1 / 0.45 POL</span>)
+                        </button>
+                        <button class="btn btn-secondary" onclick="closeTournamentModal()" style="font-size:0.85rem; padding:9px 14px;">
+                            CLOSE
+                        </button>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: 100-PLAYER LIVE WINNING REPORT (LOCKED FOR SPECTATORS / OPEN FOR ENROLLED) -->
+                <div id="leaderboardViewContainer" style="display:none; text-align:left;">
+                    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(0,240,255,0.2); border-radius:8px; padding:8px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                        <div>
+                            <div style="font-weight:bold; color:#00f0ff; font-size:0.82rem;" id="lbArenaTitle">BRONZE ARENA ($1 ENTRY) (100 PILOTS)</div>
+                            <div style="font-size:0.72rem; color:#94a3b8;">Guaranteed Winning Rank • Rank 1-50 Win Cash Prizes</div>
+                        </div>
+                        <button onclick="renderLeaderboard()" style="background:rgba(0,240,255,0.15); border:1px solid #00f0ff; color:#00f0ff; padding:3px 8px; border-radius:6px; font-size:0.72rem; cursor:pointer;">
+                            🔄 REFRESH
+                        </button>
+                    </div>
+
+                    <!-- USER ENROLLED STATUS PILL -->
+                    <div id="userEnrolledAlert" style="display:none; background:rgba(0, 255, 136, 0.15); border:1px solid #00ff88; border-radius:8px; padding:6px 12px; margin-bottom:8px; font-size:0.76rem; color:#00ff88; justify-content:space-between; align-items:center;">
+                        <span>✅ <strong>YOU ARE ENROLLED!</strong> Scores and ranks are fully visible!</span>
+                        <span id="userRankPill" style="background:#00ff88; color:#000; font-weight:bold; padding:2px 8px; border-radius:10px; font-size:0.7rem;">RANK #14</span>
+                    </div>
+
+                    <!-- TABLE WRAPPER WITH CONDITIONAL LOCK OVERLAY -->
+                    <div style="position:relative; border-radius:8px; overflow:hidden;">
+                        <!-- HEADER ROW -->
+                        <div style="display:grid; grid-template-columns:46px 1fr 75px 115px; padding:6px 8px; background:rgba(255,170,0,0.15); color:#ffaa00; font-weight:bold; font-size:0.74rem; border-top-left-radius:8px; border-top-right-radius:8px; border:1px solid rgba(255,170,0,0.3); border-bottom:none;">
+                            <span>RANK</span>
+                            <span>PILOT WALLET</span>
+                            <span style="text-align:right;">SCORE</span>
+                            <span style="text-align:right;">WINNING STATUS</span>
+                        </div>
+
+                        <!-- 100-ROW SCROLLABLE CONTAINER -->
+                        <div id="lbTableContainer" class="lb-table-container blur-lb">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+
+                        <!-- SPECTATOR LOCK OVERLAY (SHOWN ONLY IF NOT ENROLLED) -->
+                        <div id="lbLockOverlay" style="position:absolute; inset:0; background:rgba(4, 4, 18, 0.88); backdrop-filter:blur(3.5px); border:2px solid #ff0077; border-radius:8px; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:16px; text-align:center; z-index:25;">
+                            <div style="font-size:2.2rem; margin-bottom:4px;">🔒🛡️</div>
+                            <div style="color:#ff0077; font-weight:800; font-size:1.05rem; letter-spacing:0.5px; text-shadow:0 0 14px rgba(255,0,119,0.7);">
+                                LIVE SCOREBOARD IS LOCKED FOR SPECTATORS!
+                            </div>
+                            <div style="color:#e2e8f0; font-size:0.78rem; margin:6px 0 12px 0; max-width:400px; line-height:1.4;">
+                                આ ૧૦૦ ખેલાડીઓનું લાઈવ સ્કોરબોર્ડ ફક્ત <strong>આ ટુર્નામેન્ટમાં જોઈન થયેલા પ્લેયર્સ</strong> માટે જ ખુલ્લું છે. બહારના લોકોને સ્કોર દેખાશે નહીં. તમારું સ્કોરબોર્ડ અનલૉક કરવા અને ટોપ ૫૦ માં ઇનામ જીતવા અત્યારે જ જોઈન કરો!
+                            </div>
+                            <button class="btn" onclick="registerTournament()" style="background:linear-gradient(90deg, #ffaa00, #ff0077); font-size:0.84rem; padding:9px 20px; box-shadow:0 0 20px rgba(255,0,119,0.6);">
+                                ⚡ ENROLL NOW TO UNLOCK 100-PLAYER SCORES (<span id="lbLockFeeText">$1 / 0.45 POL</span>)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+                        <span style="font-size:0.72rem; color:#64748b;">Showing all 100 verified on-chain pilot slots</span>
+                        <button class="btn btn-secondary" onclick="switchMainTab('prizes')" style="font-size:0.76rem; padding:6px 14px;">
+                            ⬅️ BACK TO PRIZES & ENROLL
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- POST-PAYMENT UPSELL MODAL (NEXT-LEVEL 2.3x CHANCE) -->
+        <div id="upsellModal" class="screen-overlay hidden" style="background:rgba(3, 3, 12, 0.96); z-index:1000; padding:16px;">
+            <div style="background:radial-gradient(circle at center, #231245 0%, #0a081e 100%); border:2px solid #d946ef; border-radius:16px; padding:22px; max-width:470px; width:95%; box-shadow:0 0 50px rgba(217, 70, 239, 0.5); text-align:center;">
+                <div style="font-size:2.2rem; margin-bottom:4px;">🚀💎</div>
+                <h2 style="color:#00ff88; font-size:1.45rem; margin-bottom:4px; text-shadow:0 0 15px rgba(0,255,136,0.6);">TOURNAMENT FLIGHT CONFIRMED!</h2>
+                <p style="color:#cbd5e1; font-size:0.82rem; margin-bottom:12px;">Your $100 VIP Entry Pass is locked in! Now take your winning chance to the <strong>NEXT LEVEL</strong>:</p>
+                
+                <!-- UPSELL PROMO CARD -->
+                <div style="background:rgba(217, 70, 239, 0.12); border:1px solid #d946ef; border-radius:12px; padding:12px 14px; margin-bottom:14px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <span style="color:#f0abfc; font-weight:bold; font-size:0.88rem;">⚡ WANT MORE SCORE & 1ST PLACE GLORY?</span>
+                        <span style="background:#d946ef; color:#fff; padding:2px 8px; border-radius:12px; font-size:0.7rem; font-weight:bold;">2.3x BOOST</span>
+                    </div>
+                    <p style="color:#e2e8f0; font-size:0.78rem; line-height:1.4; margin-bottom:6px;">
+                        Equip the <strong>Quantum Phoenix Core NFT ($5)</strong>: Multiplies all your in-game points by <strong>2.3x</strong> (100 base score jumps directly to 230 points!). Dominate other players and secure the <strong>$12.00 Rank 1 Prize!</strong>
+                    </p>
+                    <div style="font-size:0.74rem; color:#00f0ff; font-weight:bold;">
+                        🔥 Pro Tip: 80% of top leaderboard winners use the Quantum Booster!
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank" class="btn" style="background:linear-gradient(90deg, #d946ef, #00f0ff); color:#fff; font-size:0.88rem; padding:10px 20px; text-decoration:none; box-shadow:0 0 25px rgba(217,70,239,0.7);">
+                        💎 GET 2.3x BOOSTER NFT ($5)
+                    </a>
+                    <button class="btn btn-secondary" onclick="closeUpsellModalAndStart()" style="font-size:0.85rem; padding:10px 18px;">
+                        ▶ FLY WITH STANDARD 1x
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -344,6 +760,86 @@
     </div>
 
     <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game State
+        let isPlaying = false;
+        let score = 0;
+        let highScore = localStorage.getItem('cyber_phoenix_high') || 0;
+        const highScoreEl = document.getElementById('highScoreText');
+        if (highScoreEl) highScoreEl.innerText = highScore;
+
+        let gameSpeed = 3.5;
+        let frameCount = 0;
+
+        // Player (Phoenix)
+        const phoenix = {
+            x: 140,
+            y: 280,
+            vy: 0,
+            gravity: 0.38,
+            lift: -7.2,
+            size: 32,
+            health: 100,
+            wingAngle: 0,
+            shieldTimer: 0,
+            potions: 2,
+            shields: 1,
+            feathers: 1
+        };
+
+        // Stars & Background Particles
+        const stars = [];
+        for (let i = 0; i < 90; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speed: Math.random() * 2 + 0.5,
+                color: Math.random() > 0.5 ? '#00f0ff' : '#ffaa00'
+            });
+        }
+
+        // Obstacles & Items
+        let obstacles = [];
+        let items = [];
+        let particles = [];
+
+        function updateHUD() {
+            const sEl = document.getElementById('scoreText');
+            if (sEl) sEl.innerText = Math.floor(score);
+            const hFill = document.getElementById('healthFill');
+            if (hFill) hFill.style.width = Math.max(0, phoenix.health) + '%';
+            const pEl = document.getElementById('potionCount');
+            if (pEl) pEl.innerText = phoenix.potions;
+            const shEl = document.getElementById('shieldCount');
+            if (shEl) shEl.innerText = phoenix.shields;
+            const spEl = document.getElementById('speedText');
+            if (spEl) spEl.innerText = (gameSpeed / 3.5).toFixed(1) + 'x';
+        }
+
+        function resetGame() {
+            score = 0;
+            gameSpeed = 3.5;
+            frameCount = 0;
+            phoenix.y = canvas.height / 2;
+            phoenix.vy = 0;
+            phoenix.health = 100;
+            phoenix.shieldTimer = 0;
+            phoenix.potions = userWalletAddress ? 3 : 2;
+            phoenix.shields = 1;
+            obstacles = [];
+            items = [];
+            particles = [];
+            updateHUD();
+        }
+
+        // Tournament & Notification Registration States
+        let isTournamentRegistered = localStorage.getItem('cyber_phoenix_tournament_reg') === 'true';
+        let notificationsEnabled = localStorage.getItem('cyber_phoenix_notifications') === 'true';
+        let hasAlertedThisRound = false;
+
         // Web3 Wallet & Polygon Configuration
         const POLYGON_CHAIN_ID = '0x89'; // 137 in decimal
         let userWalletAddress = null;
@@ -403,6 +899,472 @@
                 phoenix.potions = Math.max(phoenix.potions, 3);
                 phoenix.feathers = Math.max(phoenix.feathers, 2);
                 updateHUD();
+            }
+        }
+
+        // ── BOOST MODE SYSTEM ──
+        let boostMode = 'normal'; // 'normal' | 'coin' | 'turbo' | 'quantum'
+
+        function setBoostMode(mode) {
+            boostMode = mode;
+            const labels = {
+                normal: 'Mode: NORMAL 🎮 (1x)',
+                coin: 'Mode: COIN RUSH 🪙 (+10 per coin)',
+                turbo: 'Mode: TURBO 🚀 (2x Score)',
+                quantum: 'Mode: QUANTUM 2.3x MULTIPLIER 💎 ($5 NFT - 100 becomes 230!)'
+            };
+            document.getElementById('boostLabel').innerText = labels[mode];
+            ['modeNormal','modeCoin','modeTurbo','modeQuantum'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.transform = 'scale(1)';
+                    el.style.opacity = '0.7';
+                }
+            });
+            const activeId = mode === 'normal' ? 'modeNormal' : mode === 'coin' ? 'modeCoin' : mode === 'turbo' ? 'modeTurbo' : 'modeQuantum';
+            const activeEl = document.getElementById(activeId);
+            if (activeEl) {
+                activeEl.style.transform = 'scale(1.08)';
+                activeEl.style.opacity = '1';
+            }
+            if (mode === 'quantum') {
+                playSound('heal');
+            }
+        }
+        setBoostMode('normal'); // default highlight
+
+        // ── 5 TOURNAMENT TIERS ($1, $5, $10, $50, $100) WITH 4 DAILY TIMINGS ──
+        let currentSessionIndex = 0;
+        let selectedTierIndex = 0;
+        let currentMainTab = 'prizes'; // 'prizes' | 'leaderboard'
+
+        const sessionsData = [
+            { name: "ROUND 1: 05:30 - 11:30 AM IST (00:00 - 06:00 UTC)", label: "🌅 Round 1 (05:30 - 11:30 AM IST)" },
+            { name: "ROUND 2: 11:30 AM - 05:30 PM IST (06:00 - 12:00 UTC)", label: "☀️ Round 2 (11:30 AM - 05:30 PM IST)" },
+            { name: "ROUND 3: 05:30 - 11:30 PM IST (12:00 - 18:00 UTC)", label: "🌆 Round 3 (05:30 - 11:30 PM IST)" },
+            { name: "ROUND 4: 11:30 PM - 05:30 AM IST (18:00 - 24:00 UTC)", label: "🌙 Round 4 (11:30 PM - 05:30 AM IST)" }
+        ];
+
+        const tiersData = [
+            {
+                tierName: "BRONZE ARENA ($1 ENTRY)",
+                tierCode: "BRONZE",
+                feeUSD: "$1.00 USD",
+                p1: "$12.00 USD (12x Return!)",
+                p2: "$8.00 USD (8x Return!)",
+                p3: "$3.00 USD (3x Return!)",
+                pBack: "$1.00 Each (Guaranteed Cash Back!)",
+                pBackAmount: "$1.00",
+                pool: "$70.00 USD Distributed Instantly",
+                polAmount: "0.45",
+                passLabel: "$1.00",
+                enrolledCount: 89
+            },
+            {
+                tierName: "SILVER ARENA ($5 ENTRY)",
+                tierCode: "SILVER",
+                feeUSD: "$5.00 USD",
+                p1: "$50.00 USD (10x Return!)",
+                p2: "$35.00 USD (7x Return!)",
+                p3: "$15.00 USD (3x Return!)",
+                pBack: "$5.00 Each (Guaranteed Cash Back!)",
+                pBackAmount: "$5.00",
+                pool: "$350.00 USD Distributed Instantly",
+                polAmount: "2.25",
+                passLabel: "$5.00",
+                enrolledCount: 76
+            },
+            {
+                tierName: "GOLD ARENA ($10 ENTRY)",
+                tierCode: "GOLD",
+                feeUSD: "$10.00 USD",
+                p1: "$100.00 USD (10x Return!)",
+                p2: "$70.00 USD (7x Return!)",
+                p3: "$30.00 USD (3x Return!)",
+                pBack: "$10.00 Each (Guaranteed Cash Back!)",
+                pBackAmount: "$10.00",
+                pool: "$700.00 USD Distributed Instantly",
+                polAmount: "4.5",
+                passLabel: "$10.00",
+                enrolledCount: 81
+            },
+            {
+                tierName: "PLATINUM ARENA ($50 ENTRY)",
+                tierCode: "PLATINUM",
+                feeUSD: "$50.00 USD",
+                p1: "$500.00 USD (10x Return!)",
+                p2: "$350.00 USD (7x Return!)",
+                p3: "$150.00 USD (3x Return!)",
+                pBack: "$50.00 Each (Guaranteed Cash Back!)",
+                pBackAmount: "$50.00",
+                pool: "$3,500.00 USD Distributed Instantly",
+                polAmount: "22.5",
+                passLabel: "$50.00",
+                enrolledCount: 64
+            },
+            {
+                tierName: "👑 DIAMOND VIP ($100 ENTRY)",
+                tierCode: "DIAMOND",
+                feeUSD: "$100.00 USD",
+                p1: "$1,000.00 USD (10x Return!)",
+                p2: "$800.00 USD (8x Return!)",
+                p3: "$300.00 USD (3x Return!)",
+                pBack: "$100.00 Each (Guaranteed Cash Back!)",
+                pBackAmount: "$100.00",
+                pool: "$7,000.00 USD Distributed Instantly",
+                polAmount: "45.0",
+                passLabel: "$100.00",
+                enrolledCount: 78
+            }
+        ];
+
+        function selectSession(idx) {
+            currentSessionIndex = idx;
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById('sessionBtn' + i);
+                if (btn) {
+                    if (i === idx) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
+            }
+            updateArenaUI();
+        }
+
+        function selectTier(idx) {
+            selectedTierIndex = idx;
+            for (let i = 0; i < 5; i++) {
+                const btn = document.getElementById('tierTab' + i);
+                if (btn) {
+                    if (i === idx) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                }
+            }
+            updateArenaUI();
+        }
+
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            const prizesView = document.getElementById('prizesViewContainer');
+            const lbView = document.getElementById('leaderboardViewContainer');
+            const tabPrizes = document.getElementById('viewTabPrizes');
+            const tabLb = document.getElementById('viewTabLeaderboard');
+
+            if (tab === 'prizes') {
+                if (prizesView) prizesView.style.display = 'block';
+                if (lbView) lbView.style.display = 'none';
+                if (tabPrizes) tabPrizes.classList.add('active');
+                if (tabLb) tabLb.classList.remove('active');
+            } else {
+                if (prizesView) prizesView.style.display = 'none';
+                if (lbView) lbView.style.display = 'block';
+                if (tabPrizes) tabPrizes.classList.remove('active');
+                if (tabLb) tabLb.classList.add('active');
+                renderLeaderboard();
+            }
+        }
+
+        function updateArenaUI() {
+            const tier = tiersData[selectedTierIndex];
+            const session = sessionsData[currentSessionIndex];
+
+            // Update texts in Prizes View
+            if (document.getElementById('tierFeeText')) document.getElementById('tierFeeText').innerText = tier.feeUSD;
+            if (document.getElementById('tierP1Text')) document.getElementById('tierP1Text').innerText = tier.p1;
+            if (document.getElementById('tierP2Text')) document.getElementById('tierP2Text').innerText = tier.p2;
+            if (document.getElementById('tierP3Text')) document.getElementById('tierP3Text').innerText = tier.p3;
+            if (document.getElementById('tierPBackText')) document.getElementById('tierPBackText').innerText = tier.pBack;
+            if (document.getElementById('tierPoolText')) document.getElementById('tierPoolText').innerText = tier.pool;
+            if (document.getElementById('nftPassFeeLabel')) document.getElementById('nftPassFeeLabel').innerText = tier.passLabel;
+
+            const slotFullName = `${tier.tierName} • ${session.label}`;
+            if (document.getElementById('enrollingSlotDetail')) document.getElementById('enrollingSlotDetail').innerText = slotFullName;
+            if (document.getElementById('lbArenaTitle')) document.getElementById('lbArenaTitle').innerText = `${tier.tierName} • ${session.label} (100 PILOT POOL)`;
+            if (document.getElementById('regBtnFeeText')) document.getElementById('regBtnFeeText').innerText = `${tier.feeUSD} / ${tier.polAmount} POL`;
+            if (document.getElementById('lbLockFeeText')) document.getElementById('lbLockFeeText').innerText = `${tier.feeUSD} / ${tier.polAmount} POL`;
+
+            const regBtn = document.getElementById('registerBtn');
+            if (regBtn && !isTournamentRegistered) {
+                regBtn.innerHTML = `⚡ 2. ENROLL VIA METAMASK (${tier.feeUSD} / ${tier.polAmount} POL)`;
+            }
+
+            if (currentMainTab === 'leaderboard') {
+                renderLeaderboard();
+            }
+        }
+
+        // ── 100-PLAYER LIVE WINNING REPORT RENDERER ──
+        // Outsiders ("barvada") have scores blurred & locked; enrolled pilots see full scores and ranks!
+        function renderLeaderboard() {
+            const tier = tiersData[selectedTierIndex];
+            const container = document.getElementById('lbTableContainer');
+            const lockOverlay = document.getElementById('lbLockOverlay');
+            const enrolledAlert = document.getElementById('userEnrolledAlert');
+            const lockIcon = document.getElementById('lbLockIcon');
+            const userRankPill = document.getElementById('userRankPill');
+
+            if (!container) return;
+
+            if (isTournamentRegistered) {
+                container.classList.remove('blur-lb');
+                if (lockOverlay) lockOverlay.style.display = 'none';
+                if (enrolledAlert) enrolledAlert.style.display = 'flex';
+                if (lockIcon) lockIcon.innerText = '🔓';
+            } else {
+                container.classList.add('blur-lb');
+                if (lockOverlay) lockOverlay.style.display = 'flex';
+                if (enrolledAlert) enrolledAlert.style.display = 'none';
+                if (lockIcon) lockIcon.innerText = '🔒';
+            }
+
+            // Generate deterministic 100 on-chain pilot entries based on tier and timing round
+            const seed = (selectedTierIndex + 1) * 100 + (currentSessionIndex + 1) * 27;
+            let rowsHtml = '';
+            const userSimRank = 14;
+
+            for (let rank = 1; rank <= 100; rank++) {
+                const isUser = isTournamentRegistered && rank === userSimRank;
+                let walletDisplay = '';
+                if (isUser && userWalletAddress) {
+                    walletDisplay = userWalletAddress.substring(0, 6) + '...' + userWalletAddress.substring(userWalletAddress.length - 4) + ' (YOU ⭐)';
+                } else {
+                    const fakeHex = ((rank * 987654321 + seed) >>> 0).toString(16).padStart(8, '0');
+                    if (isTournamentRegistered) {
+                        walletDisplay = '0x' + fakeHex.substring(0, 4) + '...' + fakeHex.substring(4, 8);
+                    } else {
+                        walletDisplay = '0x' + fakeHex.substring(0, 3) + '...****';
+                    }
+                }
+
+                // Calculate descending realistic score
+                let rawScore = Math.max(80, Math.floor(1900 - Math.pow(rank, 1.45) * 4.2 + (rank % 7) * 9));
+                if (isUser && Math.floor(score) > rawScore) {
+                    rawScore = Math.floor(score);
+                }
+
+                let prizeText = '';
+                let rankBadge = `#${rank}`;
+                let rowClass = 'lb-row';
+
+                if (rank === 1) {
+                    rankBadge = '🥇 1';
+                    prizeText = `<strong style="color:#ffd700;">${tier.p1.split(' ')[0]} (1st)</strong>`;
+                    rowClass += ' winner';
+                } else if (rank === 2) {
+                    rankBadge = '🥈 2';
+                    prizeText = `<strong style="color:#e2e8f0;">${tier.p2.split(' ')[0]} (2nd)</strong>`;
+                    rowClass += ' winner';
+                } else if (rank === 3) {
+                    rankBadge = '🥉 3';
+                    prizeText = `<strong style="color:#cd7f32;">${tier.p3.split(' ')[0]} (3rd)</strong>`;
+                    rowClass += ' winner';
+                } else if (rank <= 50) {
+                    rankBadge = `#${rank}`;
+                    prizeText = `<span style="color:#00ff88;font-weight:bold;">${tier.pBackAmount} Cash Back</span>`;
+                    rowClass += ' winner';
+                } else {
+                    rankBadge = `#${rank}`;
+                    prizeText = `<span style="color:#64748b;">Competing</span>`;
+                }
+
+                if (isUser) {
+                    rowClass += ' user-row';
+                    if (userRankPill) userRankPill.innerText = `YOUR RANK: #${rank}`;
+                }
+
+                rowsHtml += `
+                    <div class="${rowClass}">
+                        <span style="font-weight:bold; color:${rank <= 3 ? '#ffaa00' : rank <= 50 ? '#00ff88' : '#94a3b8'};">${rankBadge}</span>
+                        <span style="font-family:monospace; color:${isUser ? '#ffea00' : '#e2e8f0'};">${walletDisplay}</span>
+                        <span style="text-align:right; font-family:monospace; font-weight:bold; color:${isUser ? '#00ff88' : '#00f0ff'};">${rawScore}</span>
+                        <span style="text-align:right; font-size:0.7rem;">${prizeText}</span>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = rowsHtml;
+        }
+
+        // Backward compatibility hook
+        function selectRoundSlot(idx) {
+            selectSession(idx);
+        }
+
+        function updateRoundTimer() {
+            const now = new Date();
+            const utcHours = now.getUTCHours();
+            const utcMinutes = now.getUTCMinutes();
+            const utcSeconds = now.getUTCSeconds();
+            
+            // 4 rounds of 6 hours each (0-5, 6-11, 12-17, 18-23 UTC)
+            const currentRoundIndex = Math.floor(utcHours / 6);
+            if (typeof initialSessionSelected === 'undefined') {
+                window.initialSessionSelected = true;
+                selectSession(currentRoundIndex);
+            }
+            const rounds = [
+                "SESSION 1 (ASIA / PACIFIC • ARENAS ACTIVE)",
+                "SESSION 2 (EUROPE / MIDDAY • ARENAS ACTIVE)",
+                "SESSION 3 (INDIA PEAK • ARENAS ACTIVE)",
+                "SESSION 4 (GLOBAL PRIME TIME • ARENAS ACTIVE)"
+            ];
+            const roundTitleEl = document.getElementById('activeRoundTitle');
+            if (roundTitleEl) roundTitleEl.innerText = rounds[currentRoundIndex];
+            
+            // Calculate time left in current 6-hour block
+            const endHour = (currentRoundIndex + 1) * 6;
+            const diffSeconds = (endHour * 3600) - (utcHours * 3600 + utcMinutes * 60 + utcSeconds);
+            
+            const hoursLeft = Math.floor(diffSeconds / 3600);
+            const minsLeft = Math.floor((diffSeconds % 3600) / 60);
+            const secsLeft = diffSeconds % 60;
+            
+            const formatted = 
+                String(hoursLeft).padStart(2, '0') + ':' +
+                String(minsLeft).padStart(2, '0') + ':' +
+                String(secsLeft).padStart(2, '0');
+            
+            const countdownEl = document.getElementById('roundCountdown');
+            if (countdownEl) countdownEl.innerText = formatted;
+
+            const enrollingSlotTimerEl = document.getElementById('enrollingSlotTimer');
+            if (enrollingSlotTimerEl) enrollingSlotTimerEl.innerText = formatted;
+
+            // 15-Minute Pre-Tournament Native Alert Trigger
+            if (diffSeconds <= 900 && diffSeconds > 840 && !hasAlertedThisRound && notificationsEnabled) {
+                hasAlertedThisRound = true;
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("🚀 CYBER PHOENIX ARENA ENDING SOON!", {
+                        body: "Current 5 Tournament Arenas close in 15 minutes! Open the cockpit and fly to claim your share of the prize pool!",
+                    });
+                    playSound('coin');
+                }
+            }
+            if (diffSeconds > 1000) {
+                hasAlertedThisRound = false;
+            }
+        }
+        setInterval(updateRoundTimer, 1000);
+        updateRoundTimer();
+
+        // ── TOURNAMENT NOTIFICATIONS SYSTEM ──
+        function updateNotifyUI() {
+            const btn = document.getElementById('notifyBtn');
+            if (!btn) return;
+            if (notificationsEnabled) {
+                btn.innerText = '✅ ALERTS ACTIVE (15M)';
+                btn.style.background = '#00aa55';
+                btn.style.borderColor = '#00ff88';
+                btn.style.color = '#fff';
+            } else {
+                btn.innerText = '🔔 TURN ON';
+                btn.style.background = 'rgba(0, 240, 255, 0.2)';
+                btn.style.borderColor = '#00f0ff';
+                btn.style.color = '#00f0ff';
+            }
+        }
+
+        async function toggleTournamentNotifications() {
+            if (notificationsEnabled) {
+                notificationsEnabled = false;
+                localStorage.setItem('cyber_phoenix_notifications', 'false');
+                updateNotifyUI();
+                alert('Tournament notifications turned off.');
+                return;
+            }
+            if (!("Notification" in window)) {
+                alert("This browser does not support desktop notifications. Please use Chrome, Edge, or Brave.");
+                return;
+            }
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                notificationsEnabled = true;
+                localStorage.setItem('cyber_phoenix_notifications', 'true');
+                updateNotifyUI();
+                playSound('heal');
+                new Notification("🚀 Cyber Phoenix Alert Enabled!", {
+                    body: "You will receive an alert 15 minutes before your tournament flight ends!",
+                });
+            } else {
+                alert("Notification permission denied. Please allow notifications in your browser settings to receive tournament alerts!");
+            }
+        }
+
+        // ── TOURNAMENT & GIVEAWAY SYSTEM ──
+        function openTournamentModal() {
+            document.getElementById('tournamentModal').classList.remove('hidden');
+            updateArenaUI();
+            updateTournamentUI();
+            updateNotifyUI();
+        }
+
+        function closeTournamentModal() {
+            document.getElementById('tournamentModal').classList.add('hidden');
+        }
+
+        function updateTournamentUI() {
+            const statusBox = document.getElementById('tournamentStatusBox');
+            const regBtn = document.getElementById('registerBtn');
+            if (!statusBox || !regBtn) return;
+            if (isTournamentRegistered) {
+                statusBox.innerHTML = '🎉 <strong>STATUS: ENROLLED!</strong> Your scores are officially entered in this tournament\'s Top 50 prize pool!';
+                statusBox.style.borderColor = '#00ff88';
+                statusBox.style.color = '#00ff88';
+                regBtn.innerText = '✅ ALREADY ENROLLED';
+                regBtn.style.background = '#00aa55';
+            }
+            renderLeaderboard();
+        }
+
+        function openUpsellModal() {
+            document.getElementById('tournamentModal').classList.add('hidden');
+            document.getElementById('upsellModal').classList.remove('hidden');
+            playSound('heal');
+        }
+
+        function closeUpsellModalAndStart() {
+            document.getElementById('upsellModal').classList.add('hidden');
+            startGame();
+        }
+
+        async function registerTournament() {
+            if (isTournamentRegistered) {
+                openUpsellModal();
+                return;
+            }
+            if (!userWalletAddress) {
+                alert('Please connect your MetaMask wallet first to enroll!');
+                await connectWallet();
+                if (!userWalletAddress) return;
+            }
+            try {
+                const tier = tiersData[selectedTierIndex] || tiersData[0];
+                const entryFeePOL = ethers.utils.parseEther(tier.polAmount);
+                const targetTreasury = "0x37754f9a0c329d5b4d758f14dc4fef8544e7a3cd";
+                
+                const txParams = {
+                    from: userWalletAddress,
+                    to: targetTreasury,
+                    value: entryFeePOL.toHexString(),
+                };
+                
+                const txHash = await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [txParams],
+                });
+                
+                isTournamentRegistered = true;
+                localStorage.setItem('cyber_phoenix_tournament_reg', 'true');
+                playSound('heal');
+                updateTournamentUI();
+                openUpsellModal();
+            } catch (err) {
+                console.error(err);
+                if (err.code === 4001) {
+                    alert('Transaction cancelled in MetaMask.');
+                } else {
+                    const tier = tiersData[selectedTierIndex] || tiersData[0];
+                    alert(`MetaMask error or insufficient POL balance for ${tier.feeUSD} fee (~${tier.polAmount} POL).`);
+                }
             }
         }
 
@@ -488,75 +1450,6 @@
                     osc.stop(now + 0.3);
                 }
             } catch (e) {}
-        }
-
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Game State
-        let isPlaying = false;
-        let score = 0;
-        let highScore = localStorage.getItem('cyber_phoenix_high') || 0;
-        document.getElementById('highScoreText').innerText = highScore;
-
-        let gameSpeed = 3.5;
-        let frameCount = 0;
-
-        // Player (Phoenix)
-        const phoenix = {
-            x: 140,
-            y: 280,
-            vy: 0,
-            gravity: 0.38,
-            lift: -7.2,
-            size: 32,
-            health: 100,
-            wingAngle: 0,
-            shieldTimer: 0,
-            potions: 2,
-            shields: 1,
-            feathers: 1
-        };
-
-        // Stars & Background Particles
-        const stars = [];
-        for (let i = 0; i < 90; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 0.5,
-                speed: Math.random() * 2 + 0.5,
-                color: Math.random() > 0.5 ? '#00f0ff' : '#ffaa00'
-            });
-        }
-
-        // Obstacles & Items
-        let obstacles = [];
-        let items = [];
-        let particles = [];
-
-        function resetGame() {
-            score = 0;
-            gameSpeed = 3.5;
-            frameCount = 0;
-            phoenix.y = canvas.height / 2;
-            phoenix.vy = 0;
-            phoenix.health = 100;
-            phoenix.shieldTimer = 0;
-            phoenix.potions = userWalletAddress ? 3 : 2;
-            phoenix.shields = 1;
-            obstacles = [];
-            items = [];
-            particles = [];
-            updateHUD();
-        }
-
-        function updateHUD() {
-            document.getElementById('scoreText').innerText = Math.floor(score);
-            document.getElementById('healthFill').style.width = Math.max(0, phoenix.health) + '%';
-            document.getElementById('potionCount').innerText = phoenix.potions;
-            document.getElementById('shieldCount').innerText = phoenix.shields;
-            document.getElementById('speedText').innerText = (gameSpeed / 3.5).toFixed(1) + 'x';
         }
 
         function startGame() {
@@ -688,7 +1581,8 @@
 
             if (isPlaying) {
                 frameCount++;
-                score += 0.1;
+                // Turbo mode = 2x, Quantum mode = 2.3x (100 -> 230 score!)
+                score += boostMode === 'quantum' ? 0.23 : boostMode === 'turbo' ? 0.2 : 0.1;
                 if (frameCount % 400 === 0) gameSpeed += 0.25;
 
                 // Physics
@@ -800,9 +1694,12 @@
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < it.size + phoenix.size) {
                         if (it.type === 'crystal') {
-                            score += 25;
+                            // Apply boost mode multiplier: Normal 1x | Coin 10 | Turbo 2x | Quantum 2.3x ($5 NFT)
+                            const coinVal = boostMode === 'coin' ? 10 : 25;
+                            const mult = boostMode === 'quantum' ? 2.3 : boostMode === 'turbo' ? 2 : 1;
+                            score += Math.round(coinVal * mult);
                             playSound('coin');
-                            spawnExplosion(it.x, it.y, '#00f0ff', 10);
+                            spawnExplosion(it.x, it.y, boostMode === 'quantum' ? '#d946ef' : boostMode === 'turbo' ? '#ff0077' : '#00f0ff', 12);
                         } else if (it.type === 'potion') {
                             phoenix.health = Math.min(100, phoenix.health + 30);
                             playSound('heal');
