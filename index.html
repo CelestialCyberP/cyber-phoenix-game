@@ -591,16 +591,16 @@
                                         <span style="color:#00ff88; font-weight:bold;">🔗 OPENSEA REAL-TIME SYNC:</span>
                                         <span id="osSyncPill" style="color:#00ff88; font-size:0.65rem; background:rgba(0,255,136,0.15); border:1px solid #00ff88; padding:1px 6px; border-radius:10px;">● CONNECTED</span>
                                     </div>
-                                    <span id="nftRemainingVaultText" style="color:#ffd700; font-family:monospace; font-weight:bold; font-size:0.8rem;">9,984 / 10,000 REMAINING</span>
+                                    <span id="nftRemainingVaultText" style="color:#ffd700; font-family:monospace; font-weight:bold; font-size:0.8rem;">10,000 / 10,000 REMAINING</span>
                                 </div>
                                 <div style="display:flex; justify-content:space-between; font-family:monospace; font-size:0.7rem; color:#cbd5e1; border-top:1px dashed rgba(255,255,255,0.1); padding-top:3px; margin-top:2px; flex-wrap:wrap; gap:4px;">
                                     <span>VAULT: <strong id="osVaultCount" style="color:#ffd700;">10,000 Total</strong></span>
                                     <span>•</span>
-                                    <span>FLOOR: <strong id="osLiveFloor" style="color:#00f0ff;">$40.00</strong></span>
+                                    <span>FLOOR: <strong id="osLiveFloor" style="color:#00f0ff;">$40.04</strong></span>
                                     <span>•</span>
                                     <span>VOLUME: <strong id="osLiveVolume" style="color:#ffaa00;">0.00 POL</strong></span>
                                     <span>•</span>
-                                    <span>CLAIMED: <strong id="osClaimedCount" style="color:#00ff88;">16</strong></span>
+                                    <span>CLAIMED: <strong id="osClaimedCount" style="color:#00ff88;">0</strong></span>
                                 </div>
                             </div>
                             <div id="championDiscountAlertBox" style="display:none; background:rgba(255, 215, 0, 0.15); border:1px solid #ffd700; border-radius:6px; padding:4px 8px; margin-top:4px; font-size:0.74rem; color:#ffd700;">
@@ -890,11 +890,15 @@
         const POLYGON_CHAIN_ID = '0x89'; // 137 in decimal
         let userWalletAddress = null;
         let web3Provider = null;
-        const OPENSEA_COLLECTION_SLUG = "celestial-cyber-phoenix-game";
+        const OPENSEA_COLLECTION_SLUG = "celestial-cyber-phoenix-official";
         const CHAMPION_NFT_CONTRACT = "0xeac349f2d9cd45bfbb26f3da29783f286383c4f8";
         const CHAMPION_NFT_TOKEN_ID = 1;
         const OPENSEA_ITEM_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/1";
-        let liveNFTClaimed = parseInt(localStorage.getItem('cyber_phoenix_nfts_claimed') || '16');
+        let liveNFTClaimed = parseInt(localStorage.getItem('cyber_phoenix_nfts_claimed') || '0');
+        if (liveNFTClaimed === 16 || isNaN(liveNFTClaimed)) {
+            liveNFTClaimed = 0;
+            localStorage.setItem('cyber_phoenix_nfts_claimed', '0');
+        }
         let liveTotalSupply = 10000;
         let liveFloorUSD = '$40.04';
         let liveVolumePOL = '0.00';
