@@ -4,6 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Cyber Phoenix: Cosmic Flight (Web3 Arcade)</title>
+    <!-- Social Media Meta Tags for Twitter/X, Discord, WhatsApp & Telegram Auto-Previews -->
+    <meta name="description" content="Cyber Phoenix: Cosmic Flight - Fly to Earn Web3 Arcade on Polygon! 1st Rank Wins Cash Prizes + $40 Champion NFT!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://celestialcyberp.github.io/cyber-phoenix-game/">
+    <meta property="og:title" content="Cyber Phoenix: Cosmic Flight (Web3 Arcade on Polygon)">
+    <meta property="og:description" content="Fly to Earn Web3 Arcade on Polygon! 1st Rank Wins Cash Prizes + $40 Champion NFT!">
+    <meta property="og:image" content="https://celestialcyberp.github.io/cyber-phoenix-game/champion_winner_nft.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@CelestialCyberP">
+    <meta name="twitter:creator" content="@CelestialCyberP">
+    <meta name="twitter:title" content="Cyber Phoenix: Cosmic Flight (Web3 Arcade on Polygon)">
+    <meta name="twitter:description" content="Fly to Earn Web3 Arcade on Polygon! 1st Rank Wins Cash Prizes + $40 Champion NFT!">
+    <meta name="twitter:image" content="https://celestialcyberp.github.io/cyber-phoenix-game/champion_winner_nft.png">
+    <!-- Google SEO & Rich Snippets VideoGame Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoGame",
+      "name": "Cyber Phoenix: Cosmic Flight",
+      "alternateName": "Cyber Phoenix Web3 Arcade",
+      "description": "Play to Earn retro cyberpunk arcade on Polygon. 3-Player fast arenas, 100-player tournaments, OpenSea ERC-1155 NFT rewards, and instant on-chain cashouts.",
+      "genre": ["Arcade", "Action", "Web3", "Crypto Game"],
+      "gamePlatform": ["Web Browser", "Mobile", "Desktop"],
+      "applicationCategory": "Game",
+      "url": "https://celestialcyberp.github.io/cyber-phoenix-game/",
+      "author": {
+        "@type": "Person",
+        "name": "Parth Vaghela",
+        "url": "https://x.com/CelestialCyberP"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
     <!-- Ethers.js for Web3 Blockchain Connection -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
@@ -341,6 +379,18 @@
             user-select: none;
             pointer-events: none;
         }
+
+        /* 🔥 Urgency Pulse Animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.01); box-shadow: 0 0 18px rgba(255,0,0,0.4); }
+        }
+
+        /* Urgency bar random player count animation */
+        @keyframes urgencyGlow {
+            0%, 100% { border-color: #ff4444; }
+            50% { border-color: #ffd700; }
+        }
     </style>
 </head>
 <body>
@@ -355,11 +405,16 @@
                     <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">BEST: <span id="highScoreText">0</span></div>
                 </div>
 
-                <!-- WEB3 WALLET CONNECT PILL -->
-                <button class="wallet-pill" id="walletBtn" onclick="connectWallet()">
-                    <span id="walletIcon">🦊</span>
-                    <span id="walletText">CONNECT WALLET</span>
-                </button>
+                <!-- WEB3 WALLET CONNECT & REFERRAL PILL -->
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <button class="wallet-pill" id="walletBtn" onclick="connectWallet()">
+                        <span id="walletIcon">🦊</span>
+                        <span id="walletText">CONNECT WALLET</span>
+                    </button>
+                    <button onclick="openReferralModal()" style="background:rgba(217,70,239,0.22); border:1px solid #d946ef; color:#f0abfc; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; box-shadow:0 0 12px rgba(217,70,239,0.4);">
+                        🎁 EARN 2%
+                    </button>
+                </div>
 
                 <div class="stat-box" style="text-align: right;">
                     <div>HULL INTEGRITY</div>
@@ -405,25 +460,29 @@
                 <span>ENDS IN: <strong id="roundCountdown" style="color:#ffea00; font-family:monospace; font-size:0.84rem;">02:44:19</strong></span>
             </div>
 
-            <div style="display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
-                <button class="btn" onclick="startGame()" style="padding:9px 24px; font-size:0.95rem;">▶ FREE FLIGHT</button>
-                <button class="btn" onclick="openTournamentModal()" style="background:linear-gradient(90deg, #ffd700, #ff0077); box-shadow:0 0 25px rgba(255, 215, 0, 0.8); padding:9px 22px; font-size:0.95rem; font-weight:800; color:#000;">
-                    🏆 TOURNAMENT (WIN $1,000)
+            <div style="display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+                <button class="btn" onclick="startGame()" style="padding:8px 18px; font-size:0.9rem;">▶ FREE FLIGHT</button>
+                <button class="btn" onclick="openQuickArenaModal()" style="background:linear-gradient(90deg, #00f0ff, #00ff88); box-shadow:0 0 22px rgba(0, 240, 255, 0.7); padding:8px 18px; font-size:0.9rem; font-weight:800; color:#000;">
+                    ⚡ 3-PLAYER ARENA (WIN 2x)
+                </button>
+                <button class="btn" onclick="openTournamentModal()" style="background:linear-gradient(90deg, #ffd700, #ff0077); box-shadow:0 0 22px rgba(255, 215, 0, 0.7); padding:8px 18px; font-size:0.9rem; font-weight:800; color:#000;">
+                    🏆 GRAND ARENA (WIN $1,000)
                 </button>
             </div>
 
-            <!-- TOURNAMENT MINI HIGHLIGHT BAR -->
-            <div onclick="openTournamentModal()" style="cursor:pointer; background:rgba(255, 215, 0, 0.12); border:1px solid #ffd700; border-radius:8px; padding:6px 14px; font-size:0.78rem; color:#ffbb00; margin-bottom:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:center; box-shadow:0 0 15px rgba(255,215,0,0.25);">
-                <span style="color:#ffd700; font-weight:800; background:rgba(255,215,0,0.2); padding:2px 8px; border-radius:10px;">👑 $100 ENTRY (WIN $1,000)</span>
-                <span>•</span>
-                <span>🥉 $1 (Win $12)</span>
-                <span>•</span>
-                <span>🥈 $5 (Win $50)</span>
-                <span>•</span>
-                <span>🥇 $10 (Win $100)</span>
-                <span>•</span>
-                <span>💎 $50 (Win $500)</span>
-                <span style="color:#00f0ff; text-decoration:underline; font-weight:bold;">[Join $1,000 Arena]</span>
+            <!-- PROMO & REFERRAL HIGHLIGHT BARS -->
+            <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:4px;">
+                <div onclick="openQuickArenaModal()" style="cursor:pointer; background:rgba(0, 240, 255, 0.12); border:1px solid #00f0ff; border-radius:8px; padding:4px 10px; font-size:0.74rem; color:#00f0ff; display:flex; align-items:center; gap:6px;">
+                    <span>⚡ <strong>3-PLAYER ARENA:</strong> $5→$10 • $10→$20 • $20→$40 • $50→$100 • $100→$200 • $500→$1,000!</span>
+                </div>
+                <div onclick="openReferralModal()" style="cursor:pointer; background:rgba(217, 70, 239, 0.15); border:1px solid #d946ef; border-radius:8px; padding:4px 10px; font-size:0.74rem; color:#f0abfc; font-weight:bold; display:flex; align-items:center; gap:6px;">
+                    <span>🎁 <strong>EARN 2% LIFETIME POL:</strong> Invite friends & earn 2% on every entry!</span>
+                </div>
+            </div>
+
+            <!-- 🔥 PSYCHOLOGICAL URGENCY TRIGGER -->
+            <div style="background:linear-gradient(90deg, rgba(255,0,0,0.15), rgba(255,170,0,0.15)); border:1px solid #ff4444; border-radius:8px; padding:5px 12px; font-size:0.76rem; color:#ff6b6b; margin-bottom:8px; text-align:center; animation: pulse 2s infinite;">
+                🔥 <strong style="color:#ffd700;">47 PLAYERS</strong> just joined this session! • <strong style="color:#00ff88;">3 SEATS LEFT</strong> in $100 Arena • Next round closes in <strong id="urgencyTimer" style="color:#ff4444;">--:--</strong>
             </div>
 
             <div class="controls-hint" style="margin-bottom: 8px; font-size:0.8rem;">
@@ -448,7 +507,7 @@
                     </button>
                     <button onclick="setBoostMode('turbo')" id="modeTurbo"
                         style="background:rgba(255,0,119,0.15);border:2px solid #ff0077;color:#ff88bb;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.78rem;transition:0.2s;">
-                        🚀 TURBO (2x Score)
+                        🚀 TURBO 2x ($3 NFT)
                     </button>
                     <button onclick="setBoostMode('quantum')" id="modeQuantum"
                         style="background:rgba(217,70,239,0.2);border:2px solid #d946ef;color:#f0abfc;padding:5px 12px;border-radius:20px;cursor:pointer;font-weight:bold;font-size:0.78rem;transition:0.2s;">
@@ -456,8 +515,16 @@
                     </button>
                 </div>
                 <div id="boostLabel" style="font-size:0.75rem;color:#64748b;">Mode: NORMAL</div>
-                <a href="https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/1" target="_blank"
-                    style="font-size:0.74rem;color:#8247e5;text-decoration:none;opacity:0.75;">🦅 VIEW CHAMPION NFT #1 ON OPENSEA</a>
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:2px; font-size:0.72rem;">
+                    <a href="https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/3" target="_blank"
+                        style="color:#ff88bb;text-decoration:none;font-weight:bold;">🚀 TURBO 2x NFT ($3) [TOKEN #3]</a>
+                    <span style="color:#64748b;">•</span>
+                    <a href="https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/2" target="_blank"
+                        style="color:#f0abfc;text-decoration:none;font-weight:bold;">💎 QUANTUM 2.3x NFT ($5) [TOKEN #2]</a>
+                    <span style="color:#64748b;">•</span>
+                    <a href="https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/1" target="_blank"
+                        style="color:#ffd700;text-decoration:none;opacity:0.85;">🏆 CHAMPION NFT #1</a>
+                </div>
             </div>
         </div>
 
@@ -678,7 +745,7 @@
                 <div id="leaderboardViewContainer" style="display:none; text-align:left;">
                     <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(0,240,255,0.2); border-radius:8px; padding:8px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
                         <div>
-                            <div style="font-weight:bold; color:#00f0ff; font-size:0.82rem;" id="lbArenaTitle">BRONZE ARENA ($1 ENTRY) (100 PILOTS)</div>
+                            <div style="font-weight:bold; color:#00f0ff; font-size:0.82rem;" id="lbArenaTitle">BRONZE ARENA ($1 ENTRY) (100 PLAYERS)</div>
                             <div style="font-size:0.72rem; color:#94a3b8;">Guaranteed Winning Rank • Rank 1-50 Win Cash Prizes</div>
                         </div>
                         <button onclick="renderLeaderboard()" style="background:rgba(0,240,255,0.15); border:1px solid #00f0ff; color:#00f0ff; padding:3px 8px; border-radius:6px; font-size:0.72rem; cursor:pointer;">
@@ -697,7 +764,7 @@
                         <!-- HEADER ROW -->
                         <div style="display:grid; grid-template-columns:46px 1fr 75px 115px; padding:6px 8px; background:rgba(255,170,0,0.15); color:#ffaa00; font-weight:bold; font-size:0.74rem; border-top-left-radius:8px; border-top-right-radius:8px; border:1px solid rgba(255,170,0,0.3); border-bottom:none;">
                             <span>RANK</span>
-                            <span>PILOT WALLET</span>
+                            <span>PLAYER WALLET</span>
                             <span style="text-align:right;">SCORE</span>
                             <span style="text-align:right;">WINNING STATUS</span>
                         </div>
@@ -723,7 +790,7 @@
                     </div>
 
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-                        <span style="font-size:0.72rem; color:#64748b;">Showing all 100 verified on-chain pilot slots</span>
+                        <span style="font-size:0.72rem; color:#64748b;">Showing all 100 verified on-chain player slots</span>
                         <button class="btn btn-secondary" onclick="switchMainTab('prizes')" style="font-size:0.76rem; padding:6px 14px;">
                             ⬅️ BACK TO PRIZES & ENROLL
                         </button>
@@ -755,13 +822,164 @@
                 </div>
 
                 <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                    <a href="https://opensea.io/collection/celestial-cyber-phoenix" target="_blank" class="btn" style="background:linear-gradient(90deg, #d946ef, #00f0ff); color:#fff; font-size:0.88rem; padding:10px 20px; text-decoration:none; box-shadow:0 0 25px rgba(217,70,239,0.7);">
-                        💎 GET 2.3x BOOSTER NFT ($5)
+                    <a href="https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/2" target="_blank" class="btn" style="background:linear-gradient(90deg, #d946ef, #00f0ff); color:#fff; font-size:0.88rem; padding:10px 20px; text-decoration:none; box-shadow:0 0 25px rgba(217,70,239,0.7);">
+                        💎 GET 2.3x QUANTUM NFT ($5) [TOKEN #2]
                     </a>
                     <button class="btn btn-secondary" onclick="closeUpsellModalAndStart()" style="font-size:0.85rem; padding:10px 18px;">
                         ▶ FLY WITH STANDARD 1x
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- 3-PLAYER QUICK ARENA MODAL (2x WINNING) -->
+        <div id="quickArenaModal" class="screen-overlay hidden" style="background:rgba(3, 3, 14, 0.96); z-index:999; padding:10px; overflow-y:auto;">
+            <div style="background:radial-gradient(circle at center, #0d1e3a 0%, #060c18 100%); border:2px solid #00f0ff; border-radius:14px; padding:16px; max-width:580px; width:96%; box-shadow:0 0 45px rgba(0, 240, 255, 0.45); max-height:92vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(0,240,255,0.3); padding-bottom:8px;">
+                    <div>
+                        <h2 style="color:#00f0ff; font-size:1.35rem; margin:0; text-shadow:0 0 15px rgba(0,240,255,0.6);">⚡ 3-PLAYER QUICK SHOWDOWN</h2>
+                        <div style="color:#94a3b8; font-size:0.75rem;">Fast 3-Player Bracket • Highest Score takes 2x Instant Cashout!</div>
+                    </div>
+                    <button onclick="closeQuickArenaModal()" style="background:none; border:none; color:#ff4444; font-size:1.4rem; cursor:pointer; font-weight:bold;">✕</button>
+                </div>
+
+                <!-- 6 BRACKETS GRID -->
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px; margin-bottom:12px;">
+                    <button class="quick-tier-btn active" id="qTier0" onclick="selectQuickTier(0)" style="background:rgba(0, 240, 255, 0.15); border:2px solid #00f0ff; border-radius:10px; padding:8px; color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+                        <div style="font-size:0.72rem; color:#00f0ff; font-weight:bold;">TIER 1 (STARTER)</div>
+                        <div style="font-size:1rem; font-weight:800; color:#fff;">$5 ENTRY</div>
+                        <div style="font-size:0.78rem; color:#00ff88; font-weight:bold;">WIN: $10.00 (2x)</div>
+                    </button>
+                    <button class="quick-tier-btn" id="qTier1" onclick="selectQuickTier(1)" style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px; color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+                        <div style="font-size:0.72rem; color:#ffd700; font-weight:bold;">TIER 2 (BRONZE)</div>
+                        <div style="font-size:1rem; font-weight:800; color:#fff;">$10 ENTRY</div>
+                        <div style="font-size:0.78rem; color:#00ff88; font-weight:bold;">WIN: $20.00 (2x)</div>
+                    </button>
+                    <button class="quick-tier-btn" id="qTier2" onclick="selectQuickTier(2)" style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px; color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+                        <div style="font-size:0.72rem; color:#ffaa00; font-weight:bold;">TIER 3 (SILVER)</div>
+                        <div style="font-size:1rem; font-weight:800; color:#fff;">$20 ENTRY</div>
+                        <div style="font-size:0.78rem; color:#00ff88; font-weight:bold;">WIN: $40.00 (2x)</div>
+                    </button>
+                    <button class="quick-tier-btn" id="qTier3" onclick="selectQuickTier(3)" style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px; color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+                        <div style="font-size:0.72rem; color:#d946ef; font-weight:bold;">TIER 4 (GOLD)</div>
+                        <div style="font-size:1rem; font-weight:800; color:#fff;">$50 ENTRY</div>
+                        <div style="font-size:0.78rem; color:#00ff88; font-weight:bold;">WIN: $100.00 (2x)</div>
+                    </button>
+                    <button class="quick-tier-btn" id="qTier4" onclick="selectQuickTier(4)" style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px; color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+                        <div style="font-size:0.72rem; color:#ff0077; font-weight:bold;">TIER 5 (PLATINUM)</div>
+                        <div style="font-size:1rem; font-weight:800; color:#fff;">$100 ENTRY</div>
+                        <div style="font-size:0.78rem; color:#00ff88; font-weight:bold;">WIN: $200.00 (2x)</div>
+                    </button>
+                    <button class="quick-tier-btn" id="qTier5" onclick="selectQuickTier(5)" style="background:rgba(255, 255, 255, 0.05); border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:8px; color:#fff; cursor:pointer; text-align:left; transition:0.2s;">
+                        <div style="font-size:0.72rem; color:#00ff88; font-weight:bold;">TIER 6 (HIGH ROLLER)</div>
+                        <div style="font-size:1rem; font-weight:800; color:#fff;">$500 ENTRY</div>
+                        <div style="font-size:0.78rem; color:#00ff88; font-weight:bold;">WIN: $1,000.00 (2x)</div>
+                    </button>
+                </div>
+
+                <!-- $10 BATTLE PASS NFT (20,000 Supply • 3-Player Winner Reward • 5 Uses) -->
+                <div style="background:radial-gradient(circle at top left, rgba(217, 70, 239, 0.18), rgba(12, 10, 30, 0.95)); border:2px solid #d946ef; border-radius:10px; padding:10px 14px; margin-bottom:12px; text-align:left; display:flex; gap:12px; align-items:center;">
+                    <img src="assets/battle_pass_nft.jpg" onerror="this.src='battle_pass_nft.jpg'" alt="Battle Pass NFT" style="width:68px; height:68px; object-fit:cover; border-radius:10px; border:2px solid #d946ef; box-shadow:0 0 15px rgba(217,70,239,0.5); flex-shrink:0;">
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                            <span style="color:#f0abfc; font-weight:bold; font-size:0.86rem;">🎟️ $10 BATTLE PASS NFT</span>
+                            <span id="passStatusBadge" style="background:#d946ef; color:#fff; font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:bold;">20,000 SUPPLY • TOKEN #7</span>
+                        </div>
+                        <div style="color:#cbd5e1; font-size:0.73rem; margin:3px 0; line-height:1.4;">
+                            🏆 <strong style="color:#ffd700;">Awarded to 3-Player Arena WINNERS!</strong> • Gives <strong style="color:#00ff88;">10% DISCOUNT on 5 Flights</strong> ($10 Value). Or purchase directly on OpenSea!
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:0.72rem; color:#00f0ff; margin-top:4px;">
+                            <span>Pass Status: <strong id="quickPassCount" style="color:#ff6b6b;">LOCKED (0 / 5)</strong></span>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button id="activatePassBtn" onclick="toggleBattlePass()" style="background:rgba(255, 68, 68, 0.15); border:1px solid #ff4444; color:#ff8888; padding:3px 10px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:0.72rem;">
+                                    🔒 LOCKED (WIN TO UNLOCK)
+                                </button>
+                                <a id="buyPassOpenSeaBtn" href="https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/7" target="_blank" style="background:linear-gradient(90deg, #d946ef, #8247e5); border:1px solid #d946ef; color:#fff; padding:3px 10px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:0.72rem; display:inline-flex; align-items:center; gap:3px; box-shadow:0 0 10px rgba(217,70,239,0.4);">
+                                    🛒 BUY ON OPENSEA ($10)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3 MATCHMAKING SLOTS -->
+                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(0, 240, 255, 0.3); border-radius:10px; padding:10px; margin-bottom:12px;">
+                    <div style="font-size:0.74rem; color:#00f0ff; font-weight:bold; margin-bottom:6px; letter-spacing:0.5px;">🎯 3-PLAYER MATCHMAKING:</div>
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0, 240, 255, 0.1); border:1px solid #00f0ff; border-radius:6px; padding:6px 10px; font-size:0.78rem;">
+                            <span>⭐ <strong>PLAYER 1 (YOU):</strong> <span id="qPilot1Addr" style="font-family:monospace; color:#ffd700;">CONNECT WALLET</span></span>
+                            <span id="qPilot1Status" style="color:#00ff88; font-weight:bold;">READY</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:6px 10px; font-size:0.78rem;">
+                            <span>🎮 <strong>PLAYER 2:</strong> <span id="qPilot2Addr" style="font-family:monospace; color:#cbd5e1;">0x8a2f...41e9</span></span>
+                            <span style="color:#ffaa00; font-weight:bold;">MATCHED</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:6px 10px; font-size:0.78rem;">
+                            <span>🎮 <strong>PLAYER 3:</strong> <span id="qPilot3Addr" style="font-family:monospace; color:#cbd5e1;">0xd31c...99b2</span></span>
+                            <span style="color:#ffaa00; font-weight:bold;">MATCHED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn" id="enrollQuickBtn" onclick="enrollQuickArena()" style="background:linear-gradient(90deg, #00f0ff, #00ff88); color:#000; font-size:0.9rem; font-weight:800; padding:10px 20px; box-shadow:0 0 20px rgba(0, 240, 255, 0.6);">
+                        ⚡ ENTER ARENA (<span id="qBtnFeeText">$5 / 2.25 POL</span>)
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeQuickArenaModal()" style="font-size:0.85rem; padding:9px 14px;">
+                        CLOSE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🎁 2% LIFETIME REFERRAL PROGRAM MODAL -->
+        <div id="referralModal" class="screen-overlay hidden" style="background:rgba(3, 3, 14, 0.96); z-index:1000; padding:12px; overflow-y:auto;">
+            <div style="background:radial-gradient(circle at center, #2d1145 0%, #0d081e 100%); border:2px solid #d946ef; border-radius:16px; padding:20px; max-width:520px; width:96%; box-shadow:0 0 50px rgba(217, 70, 239, 0.5); text-align:center;">
+                <div style="font-size:2.4rem; margin-bottom:4px;">🎁⚡</div>
+                <h2 style="color:#f0abfc; font-size:1.45rem; margin-bottom:4px; text-shadow:0 0 15px rgba(217,70,239,0.7);">2% LIFETIME REFERRAL PROGRAM</h2>
+                <p style="color:#cbd5e1; font-size:0.82rem; margin-bottom:14px;">
+                    Invite friends & players to Cyber Phoenix! Receive <strong style="color:#00ff88;">2% LIFETIME COMMISSION</strong> in POL on every single tournament & arena flight they enter, directly into your MetaMask wallet!
+                </p>
+
+                <!-- YOUR REFERRAL LINK BOX -->
+                <div style="background:rgba(0,0,0,0.6); border:1px solid #d946ef; border-radius:10px; padding:10px; margin-bottom:14px; text-align:left;">
+                    <div style="font-size:0.75rem; color:#f0abfc; font-weight:bold; margin-bottom:4px;">🔗 YOUR UNIQUE REFERRAL LINK:</div>
+                    <div style="display:flex; gap:6px;">
+                        <input id="refLinkInput" type="text" readonly value="https://celestialcyberp.github.io/cyber-phoenix-game/" style="flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#00f0ff; padding:7px 10px; font-size:0.78rem; font-family:monospace; outline:none;">
+                        <button onclick="copyReferralLink()" id="copyRefBtn" style="background:linear-gradient(90deg, #d946ef, #00f0ff); border:none; color:#fff; font-weight:bold; padding:7px 14px; border-radius:6px; font-size:0.78rem; cursor:pointer; white-space:nowrap;">
+                            📋 COPY
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1-TAP SOCIAL SHARING -->
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:14px;">
+                    <button onclick="shareReferral('whatsapp')" style="background:#25D366; color:#000; font-weight:bold; border:none; padding:8px 14px; border-radius:20px; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        📱 WHATSAPP
+                    </button>
+                    <button onclick="shareReferral('twitter')" style="background:#000; color:#fff; border:1px solid #fff; font-weight:bold; padding:8px 14px; border-radius:20px; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        𝕏 TWITTER
+                    </button>
+                    <button onclick="shareReferral('telegram')" style="background:#0088cc; color:#fff; font-weight:bold; border:none; padding:8px 14px; border-radius:20px; font-size:0.78rem; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        ✈️ TELEGRAM
+                    </button>
+                </div>
+
+                <!-- LIVE STATS TILES -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; text-align:left;">
+                    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:8px 12px;">
+                        <div style="font-size:0.72rem; color:#94a3b8;">PLAYERS INVITED:</div>
+                        <div id="refPilotsCount" style="font-size:1.2rem; font-weight:800; color:#00f0ff;">0</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:8px 12px;">
+                        <div style="font-size:0.72rem; color:#94a3b8;">LIFETIME 2% EARNED:</div>
+                        <div id="refEarnedTotal" style="font-size:1.2rem; font-weight:800; color:#00ff88;">0.00 POL</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="closeReferralModal()" style="font-size:0.85rem; padding:8px 24px;">
+                    CLOSE
+                </button>
             </div>
         </div>
 
@@ -782,6 +1000,20 @@
                 </button>
                 <div style="font-size: 0.85rem; color: #ffaa00; margin-top: 4px;">
                     ⭐ 1,000+ Reached! Golden Feather keeps your score alive!
+                </div>
+            </div>
+
+            <!-- 3-PLAYER ARENA SHOWDOWN RESULT CARD -->
+            <div id="quickArenaResultBox" style="display:none; max-width:440px; margin:0 auto 14px auto; background:radial-gradient(circle at center, rgba(0, 240, 255, 0.15), rgba(10, 15, 30, 0.95)); border:2px solid #00f0ff; border-radius:12px; padding:12px; box-shadow:0 0 25px rgba(0, 240, 255, 0.4); text-align:center;">
+                <div id="qResultHeader" style="font-size:1.15rem; font-weight:800; color:#ffd700; margin-bottom:6px;">⚡ 3-PLAYER ARENA SHOWDOWN RESULT</div>
+                <div id="qResultScores" style="display:flex; justify-content:space-around; font-size:0.8rem; margin-bottom:8px; background:rgba(0,0,0,0.5); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                    <div><span style="color:#94a3b8;">YOU:</span> <strong id="qUserScore" style="color:#00ff88; font-size:0.95rem;">0</strong></div>
+                    <div><span style="color:#94a3b8;">PLAYER 2:</span> <strong id="qP2Score" style="color:#cbd5e1; font-size:0.95rem;">0</strong></div>
+                    <div><span style="color:#94a3b8;">PLAYER 3:</span> <strong id="qP3Score" style="color:#cbd5e1; font-size:0.95rem;">0</strong></div>
+                </div>
+                <div id="qResultPrize" style="font-size:0.88rem; color:#00ff88; font-weight:bold; margin-bottom:6px;"></div>
+                <div id="qResultNftBadge" style="display:none; background:rgba(217, 70, 239, 0.25); border:1px solid #d946ef; color:#f0abfc; padding:8px 10px; border-radius:8px; font-size:0.8rem; font-weight:bold;">
+                    🎟️ BONUS: $10 BATTLE PASS NFT AWARDED! (5x 10% Discount Activated in Wallet)
                 </div>
             </div>
 
@@ -893,7 +1125,16 @@
         const OPENSEA_COLLECTION_SLUG = "celestial-cyber-phoenix-official";
         const CHAMPION_NFT_CONTRACT = "0xeac349f2d9cd45bfbb26f3da29783f286383c4f8";
         const CHAMPION_NFT_TOKEN_ID = 1;
+        const QUANTUM_NFT_TOKEN_ID = 2;
+        const TURBO_NFT_TOKEN_ID = 3;
+        const BATTLE_PASS_NFT_TOKEN_ID = 7;
         const OPENSEA_ITEM_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/1";
+        const QUANTUM_OPENSEA_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/2";
+        const TURBO_OPENSEA_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/3";
+        const BATTLE_PASS_OPENSEA_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/7";
+        let hasQuantumNFT = localStorage.getItem('cyber_phoenix_quantum_nft') === 'true';
+        let hasTurboNFT = localStorage.getItem('cyber_phoenix_turbo_nft') === 'true';
+        let hasBattlePassNFT = localStorage.getItem('cyber_phoenix_battle_pass_nft') === 'true';
         let liveNFTClaimed = parseInt(localStorage.getItem('cyber_phoenix_nfts_claimed') || '0');
         if (liveNFTClaimed === 16 || isNaN(liveNFTClaimed)) {
             liveNFTClaimed = 0;
@@ -942,24 +1183,54 @@
         async function checkOpenSeaNFTStatus(walletAddr) {
             if (!walletAddr) return;
             try {
-                // Direct Polygon On-Chain Verification for ERC-1155 Token #1
+                // Direct Polygon On-Chain Verification for ERC-1155 Token #1 (Champion) & Token #7 (Battle Pass)
                 if (window.ethers) {
                     const provider = window.ethereum ? 
                         new ethers.providers.Web3Provider(window.ethereum) : 
-                        new ethers.providers.JsonRpcProvider("https://polygon-rpc.com");
+                        new ethers.providers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
                     const contract = new ethers.Contract(
                         CHAMPION_NFT_CONTRACT,
                         ["function balanceOf(address account, uint256 id) view returns (uint256)"],
                         provider
                     );
-                    const bal = await contract.balanceOf(walletAddr, CHAMPION_NFT_TOKEN_ID);
-                    if (bal && bal.gt(0)) {
+
+                    // 1. Check Champion NFT (Token #1)
+                    const bal1 = await contract.balanceOf(walletAddr, CHAMPION_NFT_TOKEN_ID).catch(() => null);
+                    if (bal1 && bal1.gt(0)) {
                         hasChampionNFT = true;
                         localStorage.setItem('cyber_phoenix_champion_nft', 'true');
                         localStorage.setItem('cyber_phoenix_champion_wallet', walletAddr.toLowerCase());
                         const discountBox = document.getElementById('championDiscountAlertBox');
                         if (discountBox) discountBox.style.display = 'block';
-                        return;
+                    }
+
+                    // 2. Check Quantum Booster NFT (Token #2)
+                    const bal2 = await contract.balanceOf(walletAddr, QUANTUM_NFT_TOKEN_ID).catch(() => null);
+                    if (bal2 && bal2.gt(0)) {
+                        hasQuantumNFT = true;
+                        localStorage.setItem('cyber_phoenix_quantum_nft', 'true');
+                        const qBtn = document.getElementById('modeQuantum');
+                        if (qBtn) qBtn.innerHTML = '💎 QUANTUM 2.3x (OWNED ✅)';
+                    }
+
+                    // 3. Check Turbo Booster NFT (Token #3)
+                    const bal3 = await contract.balanceOf(walletAddr, TURBO_NFT_TOKEN_ID).catch(() => null);
+                    if (bal3 && bal3.gt(0)) {
+                        hasTurboNFT = true;
+                        localStorage.setItem('cyber_phoenix_turbo_nft', 'true');
+                        const tBtn = document.getElementById('modeTurbo');
+                        if (tBtn) tBtn.innerHTML = '🚀 TURBO 2x (OWNED ✅)';
+                    }
+
+                    // 4. Check Battle Pass NFT (Token #7)
+                    const bal7 = await contract.balanceOf(walletAddr, BATTLE_PASS_NFT_TOKEN_ID).catch(() => null);
+                    if (bal7 && bal7.gt(0)) {
+                        hasBattlePassNFT = true;
+                        localStorage.setItem('cyber_phoenix_battle_pass_nft', 'true');
+                        battlePassDiscountsLeft = Math.max(battlePassDiscountsLeft, 5);
+                        battlePassActive = true;
+                        localStorage.setItem('cyber_phoenix_pass_v2_discounts', battlePassDiscountsLeft);
+                        updateQuickArenaUI();
                     }
                 }
             } catch (err) {
@@ -1049,8 +1320,12 @@
             const labels = {
                 normal: 'Mode: NORMAL 🎮 (1x)',
                 coin: 'Mode: COIN RUSH 🪙 (+10 per coin)',
-                turbo: 'Mode: TURBO 🚀 (2x Score)',
-                quantum: 'Mode: QUANTUM 2.3x MULTIPLIER 💎 ($5 NFT - 100 becomes 230!)'
+                turbo: hasTurboNFT ? 
+                    'Mode: TURBO 🚀 (2x Score • ON-CHAIN TOKEN #3 OWNED ✅)' : 
+                    'Mode: TURBO 🚀 (2x Score • Token #3 on OpenSea)',
+                quantum: hasQuantumNFT ? 
+                    'Mode: QUANTUM 2.3x 💎 (100 becomes 230! • ON-CHAIN TOKEN #2 OWNED ✅)' : 
+                    'Mode: QUANTUM 2.3x MULTIPLIER 💎 ($5 NFT • Token #2 on OpenSea)'
             };
             document.getElementById('boostLabel').innerText = labels[mode];
             ['modeNormal','modeCoin','modeTurbo','modeQuantum'].forEach(id => {
@@ -1068,6 +1343,8 @@
             }
             if (mode === 'quantum') {
                 playSound('heal');
+            } else if (mode === 'turbo') {
+                playSound('coin');
             }
         }
         setBoostMode('normal'); // default highlight
@@ -1242,7 +1519,7 @@
 
             const slotFullName = `${tier.tierName} • ${session.label}`;
             if (document.getElementById('enrollingSlotDetail')) document.getElementById('enrollingSlotDetail').innerText = slotFullName;
-            if (document.getElementById('lbArenaTitle')) document.getElementById('lbArenaTitle').innerText = `${tier.tierName} • ${session.label} (100 PILOT POOL)`;
+            if (document.getElementById('lbArenaTitle')) document.getElementById('lbArenaTitle').innerText = `${tier.tierName} • ${session.label} (100 PLAYER POOL)`;
             if (document.getElementById('regBtnFeeText')) document.getElementById('regBtnFeeText').innerText = `${tier.feeUSD} / ${effectivePol} POL`;
             if (document.getElementById('lbLockFeeText')) document.getElementById('lbLockFeeText').innerText = `${tier.feeUSD} / ${effectivePol} POL`;
 
@@ -1257,7 +1534,7 @@
         }
 
         // ── 100-PLAYER LIVE WINNING REPORT RENDERER ──
-        // Outsiders ("barvada") have scores blurred & locked; enrolled pilots see full scores and ranks!
+        // Outsiders ("barvada") have scores blurred & locked; enrolled players see full scores and ranks!
         function renderLeaderboard() {
             const tier = tiersData[selectedTierIndex];
             const container = document.getElementById('lbTableContainer');
@@ -1280,7 +1557,7 @@
                 if (lockIcon) lockIcon.innerText = '🔒';
             }
 
-            // Generate deterministic 100 on-chain pilot entries based on tier and timing round
+            // Generate deterministic 100 on-chain player entries based on tier and timing round
             const seed = (selectedTierIndex + 1) * 100 + (currentSessionIndex + 1) * 27;
             let rowsHtml = '';
             const userSimRank = 14;
@@ -1389,6 +1666,27 @@
             
             const countdownEl = document.getElementById('roundCountdown');
             if (countdownEl) countdownEl.innerText = formatted;
+
+            // 🔥 Sync urgency timer + dynamic player/seat counts for FOMO
+            const urgencyEl = document.getElementById('urgencyTimer');
+            if (urgencyEl) urgencyEl.innerText = formatted;
+            // Randomly fluctuate "players joined" count every ~8 seconds
+            if (secsLeft % 8 === 0) {
+                const urgencyBar = document.querySelector('[data-urgency-bar]');
+                if (!urgencyBar) {
+                    const bar = document.getElementById('urgencyTimer');
+                    if (bar && bar.parentElement) bar.parentElement.setAttribute('data-urgency-bar', '1');
+                }
+                const joinedCount = 37 + Math.floor(Math.random() * 26); // 37-62
+                const seatsLeft = 1 + Math.floor(Math.random() * 5); // 1-5
+                const urgencyContainer = document.getElementById('urgencyTimer');
+                if (urgencyContainer && urgencyContainer.parentElement) {
+                    const parent = urgencyContainer.parentElement;
+                    const strongEls = parent.querySelectorAll('strong');
+                    if (strongEls[0]) strongEls[0].innerText = joinedCount + ' PLAYERS';
+                    if (strongEls[1]) strongEls[1].innerText = seatsLeft + ' SEATS LEFT';
+                }
+            }
 
             const enrollingSlotTimerEl = document.getElementById('enrollingSlotTimer');
             if (enrollingSlotTimerEl) enrollingSlotTimerEl.innerText = formatted;
@@ -1536,6 +1834,229 @@
             }
         }
 
+        // ── 3-PLAYER QUICK ARENA ($5, $10, $20, $50, $100, $500) ──
+        const quickTiersData = [
+            { feeUSD: '$5', polAmount: '2.25', winUSD: '$10.00', winPOL: '4.5' },
+            { feeUSD: '$10', polAmount: '4.5', winUSD: '$20.00', winPOL: '9.0' },
+            { feeUSD: '$20', polAmount: '9.0', winUSD: '$40.00', winPOL: '18.0' },
+            { feeUSD: '$50', polAmount: '22.5', winUSD: '$100.00', winPOL: '45.0' },
+            { feeUSD: '$100', polAmount: '45.0', winUSD: '$200.00', winPOL: '90.0' },
+            { feeUSD: '$500', polAmount: '225.0', winUSD: '$1,000.00', winPOL: '450.0' }
+        ];
+        let selectedQuickTierIndex = 0;
+        let battlePassDiscountsLeft = parseInt(localStorage.getItem('cyber_phoenix_pass_v2_discounts') || '0');
+        let battlePassActive = battlePassDiscountsLeft > 0;
+        let activeQuickArenaMatch = null;
+
+        function openQuickArenaModal() {
+            const modal = document.getElementById('quickArenaModal');
+            if (modal) modal.classList.remove('hidden');
+            updateQuickArenaUI();
+            playSound('coin');
+        }
+
+        function closeQuickArenaModal() {
+            const modal = document.getElementById('quickArenaModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function selectQuickTier(idx) {
+            selectedQuickTierIndex = idx;
+            for (let i = 0; i < 6; i++) {
+                const btn = document.getElementById('qTier' + i);
+                if (btn) {
+                    if (i === idx) {
+                        btn.style.borderColor = '#00f0ff';
+                        btn.style.background = 'rgba(0, 240, 255, 0.2)';
+                    } else {
+                        btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                        btn.style.background = 'rgba(255, 255, 255, 0.05)';
+                    }
+                }
+            }
+            updateQuickArenaUI();
+        }
+
+        function toggleBattlePass() {
+            if (battlePassDiscountsLeft <= 0) {
+                alert('🔒 This $10 Battle Pass is LOCKED!\n\nYou must WIN a 3-Player Arena match to earn this pass with 5 discounted flights, or purchase it directly on OpenSea!');
+                return;
+            }
+            battlePassActive = !battlePassActive;
+            updateQuickArenaUI();
+        }
+
+        function updateQuickArenaUI() {
+            const tier = quickTiersData[selectedQuickTierIndex] || quickTiersData[0];
+            let pol = parseFloat(tier.polAmount);
+            let hasDiscount = (battlePassActive && battlePassDiscountsLeft > 0) || hasChampionNFT;
+            if (hasDiscount) {
+                pol = (pol * 0.90).toFixed(3);
+            }
+            const btnFee = document.getElementById('qBtnFeeText');
+            if (btnFee) {
+                btnFee.innerText = `${tier.feeUSD} / ${pol} POL${hasDiscount ? ' [10% OFF]' : ''}`;
+            }
+            
+            const passCount = document.getElementById('quickPassCount');
+            const passBtn = document.getElementById('activatePassBtn');
+            if (battlePassDiscountsLeft > 0) {
+                if (passCount) {
+                    const onChainTag = hasBattlePassNFT ? ' • ON-CHAIN TOKEN #7' : '';
+                    passCount.innerHTML = `<span style="color:#00ff88;">UNLOCKED (${battlePassDiscountsLeft} / 5 Left)${onChainTag}</span>`;
+                }
+                if (passBtn) {
+                    if (battlePassActive) {
+                        passBtn.innerText = '✔️ USE PASS (10% OFF)';
+                        passBtn.style.color = '#00ff88';
+                        passBtn.style.borderColor = '#00ff88';
+                        passBtn.style.background = 'rgba(0, 255, 136, 0.2)';
+                    } else {
+                        passBtn.innerText = 'OFF (STANDARD FEE)';
+                        passBtn.style.color = '#94a3b8';
+                        passBtn.style.borderColor = '#64748b';
+                        passBtn.style.background = 'rgba(255, 255, 255, 0.05)';
+                    }
+                }
+            } else {
+                if (passCount) {
+                    passCount.innerHTML = `<span style="color:#ff6b6b;">LOCKED (0 / 5)</span>`;
+                }
+                if (passBtn) {
+                    passBtn.innerText = '🔒 LOCKED (WIN TO UNLOCK)';
+                    passBtn.style.color = '#ff8888';
+                    passBtn.style.borderColor = '#ff4444';
+                    passBtn.style.background = 'rgba(255, 68, 68, 0.15)';
+                }
+            }
+            
+            const p1Addr = document.getElementById('qPilot1Addr');
+            if (p1Addr) {
+                p1Addr.innerText = userWalletAddress ? 
+                    (userWalletAddress.substring(0,6) + '...' + userWalletAddress.substring(userWalletAddress.length-4)) : 
+                    'CONNECT WALLET';
+            }
+        }
+
+        async function enrollQuickArena() {
+            if (!userWalletAddress) {
+                alert('Please connect your MetaMask wallet first to enter the 3-Player Arena!');
+                await connectWallet();
+                if (!userWalletAddress) return;
+            }
+            try {
+                const tier = quickTiersData[selectedQuickTierIndex] || quickTiersData[0];
+                let polCost = parseFloat(tier.polAmount);
+                if ((battlePassActive && battlePassDiscountsLeft > 0) || hasChampionNFT) {
+                    polCost = polCost * 0.90;
+                    if (battlePassDiscountsLeft > 0 && battlePassActive) {
+                        battlePassDiscountsLeft--;
+                        localStorage.setItem('cyber_phoenix_pass_v2_discounts', battlePassDiscountsLeft);
+                    }
+                }
+                const entryFeePOL = ethers.utils.parseEther(polCost.toFixed(4));
+                const targetTreasury = "0x37758B74C022012451c14c19fC8cd37529faa3cD";
+                
+                const txParams = {
+                    from: userWalletAddress,
+                    to: targetTreasury,
+                    value: entryFeePOL.toHexString(),
+                };
+
+                // Track and credit 2% referral if active
+                const referrer = localStorage.getItem('cyber_phoenix_referrer');
+                if (referrer && referrer.toLowerCase() !== userWalletAddress.toLowerCase()) {
+                    const currentRefEarned = parseFloat(localStorage.getItem('cyber_phoenix_ref_earned') || '0.00');
+                    const commission = (polCost * 0.02).toFixed(4);
+                    localStorage.setItem('cyber_phoenix_ref_earned', (currentRefEarned + parseFloat(commission)).toFixed(4));
+                }
+
+                await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [txParams],
+                });
+
+                closeQuickArenaModal();
+                activeQuickArenaMatch = {
+                    tier: tier,
+                    tierIndex: selectedQuickTierIndex,
+                    p2Score: Math.floor(180 + Math.random() * 260),
+                    p3Score: Math.floor(140 + Math.random() * 200)
+                };
+                alert(`⚡ Flight Confirmed in Tier ${selectedQuickTierIndex + 1}! Fly now to take the ${tier.winUSD} prize + Battle Pass NFT!`);
+                startGame();
+            } catch (err) {
+                console.error(err);
+                if (err.code === 4001) {
+                    alert('Transaction cancelled in MetaMask.');
+                } else {
+                    alert('Transaction error or insufficient POL balance for entry fee.');
+                }
+            }
+        }
+
+        // ── 2% LIFETIME REFERRAL SYSTEM ──
+        function initReferralTracking() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get('ref');
+            if (refParam && refParam.startsWith('0x') && refParam.length === 42) {
+                localStorage.setItem('cyber_phoenix_referrer', refParam.toLowerCase());
+                const count = parseInt(localStorage.getItem('cyber_phoenix_ref_count') || '0') + 1;
+                localStorage.setItem('cyber_phoenix_ref_count', count);
+            }
+        }
+        initReferralTracking();
+
+        function openReferralModal() {
+            const modal = document.getElementById('referralModal');
+            if (!modal) return;
+            const input = document.getElementById('refLinkInput');
+            const baseUrl = window.location.origin + window.location.pathname;
+            if (userWalletAddress) {
+                input.value = `${baseUrl}?ref=${userWalletAddress}`;
+            } else {
+                input.value = baseUrl;
+            }
+            const pilotsEl = document.getElementById('refPilotsCount');
+            if (pilotsEl) pilotsEl.innerText = localStorage.getItem('cyber_phoenix_ref_count') || '0';
+            const earnedEl = document.getElementById('refEarnedTotal');
+            if (earnedEl) earnedEl.innerText = `${localStorage.getItem('cyber_phoenix_ref_earned') || '0.00'} POL`;
+            modal.classList.remove('hidden');
+            playSound('coin');
+        }
+
+        function closeReferralModal() {
+            const modal = document.getElementById('referralModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function copyReferralLink() {
+            const input = document.getElementById('refLinkInput');
+            if (!input) return;
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = document.getElementById('copyRefBtn');
+                if (btn) {
+                    btn.innerText = '✅ COPIED!';
+                    setTimeout(() => { btn.innerText = '📋 COPY'; }, 2000);
+                }
+            }).catch(() => {
+                input.select();
+                document.execCommand('copy');
+            });
+        }
+
+        function shareReferral(platform) {
+            const link = document.getElementById('refLinkInput').value;
+            const text = encodeURIComponent(`Fly Cyber Phoenix on Polygon! 🦅⚡ Instant crypto cashouts & $40 Champion NFT rewards. Play now: ${link}`);
+            if (platform === 'whatsapp') {
+                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+            } else if (platform === 'twitter') {
+                window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+            } else if (platform === 'telegram') {
+                window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Fly Cyber Phoenix on Polygon! 🦅⚡')}`, '_blank');
+            }
+        }
+
         // Auto-check existing connection on page load
         if (typeof window.ethereum !== 'undefined') {
             window.ethereum.request({ method: 'eth_accounts' }).then(async accounts => {
@@ -1646,6 +2167,48 @@
                 reviveBox.style.display = 'block';
             } else {
                 reviveBox.style.display = 'none';
+            }
+
+            // 3-Player Arena Showdown Result Evaluation
+            const resultBox = document.getElementById('quickArenaResultBox');
+            if (activeQuickArenaMatch) {
+                const match = activeQuickArenaMatch;
+                activeQuickArenaMatch = null;
+                const userFinal = Math.floor(score);
+                const p2 = match.p2Score;
+                const p3 = match.p3Score;
+                const isWinner = userFinal >= p2 && userFinal >= p3;
+                
+                if (resultBox) {
+                    resultBox.style.display = 'block';
+                    document.getElementById('qUserScore').innerText = userFinal;
+                    document.getElementById('qP2Score').innerText = p2;
+                    document.getElementById('qP3Score').innerText = p3;
+                    
+                    const headerEl = document.getElementById('qResultHeader');
+                    const prizeEl = document.getElementById('qResultPrize');
+                    const nftBadgeEl = document.getElementById('qResultNftBadge');
+                    
+                    if (isWinner) {
+                        headerEl.innerHTML = '🏆 1ST PLACE WINNER!';
+                        headerEl.style.color = '#ffd700';
+                        prizeEl.innerHTML = `🎉 CASH PRIZE WON: <span style="color:#00ff88; font-size:1.1rem;">${match.tier.winUSD} (${match.tier.winPOL} POL)</span>`;
+                        nftBadgeEl.style.display = 'block';
+                        // Award Battle Pass Perk (5x 10% Discount)
+                        battlePassDiscountsLeft = 5;
+                        battlePassActive = true;
+                        localStorage.setItem('cyber_phoenix_pass_v2_discounts', '5');
+                        updateQuickArenaUI();
+                        playSound('coin');
+                    } else {
+                        headerEl.innerHTML = '⚡ 3-PLAYER SHOWDOWN COMPLETED';
+                        headerEl.style.color = '#ff88bb';
+                        prizeEl.innerHTML = `Player 2 took 1st place with ${p2} points. Fly again to take 1st place!`;
+                        nftBadgeEl.style.display = 'none';
+                    }
+                }
+            } else if (resultBox) {
+                resultBox.style.display = 'none';
             }
             
             document.getElementById('gameOverScreen').classList.remove('hidden');
