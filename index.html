@@ -391,7 +391,102 @@
             0%, 100% { border-color: #ff4444; }
             50% { border-color: #ffd700; }
         }
-    </style>
+    
+        /* ── 360° 3D INTERACTIVE NFT CARD VIEWER ── */
+        .titan-3d-scene {
+            perspective: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 12px auto;
+            width: 100%;
+            max-width: 280px;
+            user-select: none;
+            touch-action: none;
+        }
+        .titan-3d-card-wrapper {
+            position: relative;
+            width: 210px;
+            height: 310px;
+            transform-style: preserve-3d;
+            cursor: grab;
+            transition: transform 0.15s ease-out;
+        }
+        .titan-3d-card-wrapper:active {
+            cursor: grabbing;
+        }
+        .titan-3d-card-wrapper.auto-spin {
+            animation: titanSpin360 10s linear infinite;
+        }
+        @keyframes titanSpin360 {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .titan-card-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 14px;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            overflow: hidden;
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.45), 0 0 15px rgba(217, 70, 239, 0.5);
+            border: 2px solid #ffd700;
+        }
+        .titan-card-front {
+            transform: rotateY(0deg);
+            background: #0d061a;
+        }
+        .titan-card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .titan-card-front::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-25deg);
+            animation: titanShine 3.5s infinite;
+        }
+        @keyframes titanShine {
+            0% { left: -150%; }
+            35% { left: 150%; }
+            100% { left: 150%; }
+        }
+        .titan-card-back {
+            transform: rotateY(180deg);
+            background: radial-gradient(circle at center, #23083e 0%, #080314 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 14px;
+            color: #ffd700;
+            text-align: center;
+            border: 2px solid #ffd700;
+        }
+        .titan-3d-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid #ffd700;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.72rem;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+</style>
 </head>
 <body>
 
@@ -465,8 +560,11 @@
                 <button class="btn" onclick="openQuickArenaModal()" style="background:linear-gradient(90deg, #00f0ff, #00ff88); box-shadow:0 0 22px rgba(0, 240, 255, 0.7); padding:8px 18px; font-size:0.9rem; font-weight:800; color:#000;">
                     ⚡ 3-PLAYER ARENA (WIN 2x)
                 </button>
-                <button class="btn" onclick="openTournamentModal()" style="background:linear-gradient(90deg, #ffd700, #ff0077); box-shadow:0 0 22px rgba(255, 215, 0, 0.7); padding:8px 18px; font-size:0.9rem; font-weight:800; color:#000;">
+                <button class="btn" onclick="openTournamentModal()" style="background:linear-gradient(90deg, #ffd700, #ffaa00); box-shadow:0 0 22px rgba(255, 215, 0, 0.7); padding:8px 18px; font-size:0.9rem; font-weight:800; color:#000;">
                     🏆 GRAND ARENA (WIN $1,000)
+                </button>
+                <button class="btn" onclick="openTitanArenaModal()" style="background:linear-gradient(90deg, #d946ef, #ffd700); box-shadow:0 0 25px rgba(217, 70, 239, 0.85); padding:8px 18px; font-size:0.9rem; font-weight:900; color:#000; border:1px solid #ffd700;">
+                    👑 TITAN WHALE ($100,000 WIN)
                 </button>
             </div>
 
@@ -474,6 +572,9 @@
             <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:4px;">
                 <div onclick="openQuickArenaModal()" style="cursor:pointer; background:rgba(0, 240, 255, 0.12); border:1px solid #00f0ff; border-radius:8px; padding:4px 10px; font-size:0.74rem; color:#00f0ff; display:flex; align-items:center; gap:6px;">
                     <span>⚡ <strong>3-PLAYER ARENA:</strong> $5→$10 • $10→$20 • $20→$40 • $50→$100 • $100→$200 • $500→$1,000!</span>
+                </div>
+                <div onclick="openTitanArenaModal()" style="cursor:pointer; background:rgba(217, 70, 239, 0.2); border:1px solid #ffd700; border-radius:8px; padding:4px 10px; font-size:0.74rem; color:#ffd700; font-weight:bold; display:flex; align-items:center; gap:6px;">
+                    <span>👑 <strong>$100,000 TITAN ARENA:</strong> 30 Whales • 1st: $100,000 • Top 5 Win $120 NFT!</span>
                 </div>
                 <div onclick="openReferralModal()" style="cursor:pointer; background:rgba(217, 70, 239, 0.15); border:1px solid #d946ef; border-radius:8px; padding:4px 10px; font-size:0.74rem; color:#f0abfc; font-weight:bold; display:flex; align-items:center; gap:6px;">
                     <span>🎁 <strong>EARN 2% LIFETIME POL:</strong> Invite friends & earn 2% on every entry!</span>
@@ -932,6 +1033,147 @@
             </div>
         </div>
 
+        <!-- 👑 $100,000 TITAN WHALE ARENA MODAL (30 WHALES) -->
+        <div id="titanArenaModal" class="screen-overlay hidden" style="background:rgba(4, 2, 16, 0.97); z-index:999; padding:10px; overflow-y:auto;">
+            <div style="background:radial-gradient(circle at center, #240a3e 0%, #080314 100%); border:2px solid #ffd700; border-radius:16px; padding:18px; max-width:620px; width:96%; box-shadow:0 0 60px rgba(255, 215, 0, 0.55); max-height:92vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(255,215,0,0.3); padding-bottom:8px;">
+                    <div>
+                        <h2 style="color:#ffd700; font-size:1.45rem; margin:0; text-shadow:0 0 20px rgba(255,215,0,0.7); display:flex; align-items:center; gap:8px;">
+                            <span>👑 $100,000 TITAN WHALE SHOWDOWN</span>
+                        </h2>
+                        <div style="color:#f0abfc; font-size:0.75rem; font-weight:bold;">Exclusive 30-Whale High Roller Arena • 11 Guaranteed Winners • Instant Payouts</div>
+                    </div>
+                    <button onclick="closeTitanArenaModal()" style="background:none; border:none; color:#ff4444; font-size:1.4rem; cursor:pointer; font-weight:bold;">✕</button>
+                </div>
+
+                <!-- KEY METRICS ROW -->
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:12px; text-align:center;">
+                    <div style="background:rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.3); border-radius:10px; padding:8px;">
+                        <div style="font-size:0.68rem; color:#f0abfc; font-weight:bold;">TOTAL PRIZE POOL</div>
+                        <div style="font-size:1.15rem; font-weight:900; color:#ffd700;">$200,000</div>
+                    </div>
+                    <div style="background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.3); border-radius:10px; padding:8px;">
+                        <div style="font-size:0.68rem; color:#94a3b8; font-weight:bold;">RANK 1 PAYOUT</div>
+                        <div style="font-size:1.15rem; font-weight:900; color:#00ff88;">$100,000 (10x)</div>
+                    </div>
+                    <div style="background:rgba(217,70,239,0.1); border:1px solid rgba(217,70,239,0.3); border-radius:10px; padding:8px;">
+                        <div style="font-size:0.68rem; color:#94a3b8; font-weight:bold;">WHALE SLOTS</div>
+                        <div style="font-size:1.15rem; font-weight:900; color:#00f0ff;">30 SLOTS ONLY</div>
+                    </div>
+                </div>
+
+                <!-- PRIZE DISTRIBUTION TABLE -->
+                <div style="background:rgba(0,0,0,0.6); border:1px solid rgba(255,215,0,0.25); border-radius:10px; padding:10px; margin-bottom:12px; text-align:left;">
+                    <div style="font-size:0.75rem; color:#ffd700; font-weight:bold; margin-bottom:6px;">🏆 GUARANTEED 11-WINNER PRIZE STRUCTURE:</div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:rgba(255,215,0,0.18); border:1px solid rgba(255,215,0,0.4); border-radius:6px; font-size:0.78rem; font-weight:bold; margin-bottom:4px;">
+                        <span style="color:#ffd700;">🥇 RANK 1 (CHAMPION WHALE):</span>
+                        <span style="color:#00ff88;">$100,000.00 CASH + 👑 $120 TITAN NFT FREE</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:rgba(217,70,239,0.12); border-radius:6px; font-size:0.76rem; font-weight:bold; margin-bottom:4px;">
+                        <span style="color:#f0abfc;">🥈 RANK 2 TO 5 (4 WINNERS):</span>
+                        <span style="color:#00ff88;">$10,000.00 CASH + 👑 $120 TITAN NFT FREE</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:6px; font-size:0.76rem; font-weight:bold;">
+                        <span style="color:#cbd5e1;">🥉 RANK 6 TO 11 (6 WINNERS):</span>
+                        <span style="color:#00ff88;">$10,000.00 CASH (Full 100% Money Back)</span>
+                    </div>
+                </div>
+
+                <!-- 👑 $120 TITAN SOVEREIGN NFT VIP CARD -->
+                <!-- 👑 360° 3D TITAN SOVEREIGN NFT VIP CARD SHOWCASE -->
+                <div style="background:radial-gradient(circle at top left, rgba(255,215,0,0.25), rgba(20, 10, 40, 0.95)); border:2px solid #ffd700; border-radius:14px; padding:14px; margin-bottom:12px; text-align:center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                        <span style="color:#ffd700; font-weight:bold; font-size:0.92rem;">👑 $120 TITAN SOVEREIGN PASS</span>
+                        <div class="titan-3d-pill">
+                            <span>🔄 360° 3D INTERACTIVE CARD</span>
+                        </div>
+                        <span style="background:#ffd700; color:#000; font-size:0.68rem; padding:2px 8px; border-radius:10px; font-weight:bold;">50,000 LIMITED</span>
+                    </div>
+
+                    <!-- 360 3D TURNTABLE STAGE -->
+                    <div class="titan-3d-scene" id="titan3dScene">
+                        <div class="titan-3d-card-wrapper auto-spin" id="titan3dCard">
+                            <!-- FRONT: ULTRA HD ARTWORK WITH UTILITY OVERLAYS -->
+                            <div class="titan-card-face titan-card-front">
+                                <img src="assets/titan_sovereign_nft.jpg" onerror="this.src='titan_sovereign_nft.jpg'" alt="Titan Sovereign NFT 360">
+                            </div>
+                            <!-- BACK: POLYGON WEB3 AUTHENTICITY CERTIFICATE -->
+                            <div class="titan-card-face titan-card-back">
+                                <div>
+                                    <div style="font-size:1.8rem; margin-top:6px;">👑</div>
+                                    <div style="font-size:0.9rem; font-weight:900; letter-spacing:1px; margin-top:2px;">TITAN SOVEREIGN</div>
+                                    <div style="font-size:0.68rem; color:#f0abfc;">POLYGON PoS (ERC-1155)</div>
+                                </div>
+                                <div style="background:rgba(255,215,0,0.1); border:1px dashed #ffd700; border-radius:8px; padding:8px; margin:6px 0; font-size:0.7rem; text-align:left; line-height:1.4;">
+                                    <div style="color:#00ff88; font-weight:bold;">💎 15% LIFETIME DISCOUNT</div>
+                                    <div style="color:#cbd5e1; font-size:0.65rem;">Applies to all $1k, $100,000 and quick arenas forever.</div>
+                                    <div style="color:#ffd700; font-size:0.65rem; margin-top:4px;">📜 Token ID: #8</div>
+                                    <div style="color:#94a3b8; font-size:0.6rem; word-break:break-all;">0xeac3...c4f8</div>
+                                </div>
+                                <div style="font-size:0.62rem; color:#a78bfa; font-weight:bold;">
+                                    CELESTIAL CYBER PHOENIX VIP
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 360 INTERACTION CONTROLS -->
+                    <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+                        <button type="button" onclick="toggleTitanAutoSpin()" id="titanSpinToggleBtn" style="background:rgba(255,215,0,0.18); border:1px solid #ffd700; color:#ffd700; font-size:0.75rem; padding:5px 12px; border-radius:8px; cursor:pointer; font-weight:bold;">
+                            ⏸️ PAUSE 360° SPIN
+                        </button>
+                        <button type="button" onclick="flipTitanCard()" style="background:rgba(217,70,239,0.2); border:1px solid #d946ef; color:#f0abfc; font-size:0.75rem; padding:5px 12px; border-radius:8px; cursor:pointer; font-weight:bold;">
+                            🔄 FLIP CARD (FRONT / BACK)
+                        </button>
+                        <a href="https://opensea.io/collection/celestial-cyber-phoenix-game" target="_blank" style="background:linear-gradient(90deg, #ffd700, #ff0077); border:1px solid #ffd700; color:#000; padding:5px 12px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px; box-shadow:0 0 12px rgba(255,215,0,0.6);">
+                            🛒 BUY NFT ($120)
+                        </a>
+                    </div>
+                    <div style="font-size:0.68rem; color:#94a3b8; margin-bottom:6px;">
+                        💡 <em>Tip: Mouse drag કરો અથવા swipe કરીને 360° કોઈપણ ખૂણેથી કાર્ડ ફેરવો!</em>
+                    </div>
+
+                    <!-- STATUS ROW -->
+                    <div style="background:rgba(0,0,0,0.5); border-radius:8px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; font-size:0.72rem;">
+                        <span style="color:#e2e8f0;">🎁 <strong>Top 5 Winners</strong> Receive This FREE!</span>
+                        <span>Status: <strong id="titanPassStatus" style="color:#ff6b6b;">LOCKED (Top 5 Win or Buy on OpenSea)</strong></span>
+                    </div>
+                </div>
+
+                <!-- 30-WHALE MATCHMAKING STATUS -->
+                <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,215,0,0.3); border-radius:10px; padding:10px; margin-bottom:12px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:0.74rem; color:#ffd700; font-weight:bold;">🐋 30-WHALE LIVE ROSTER:</span>
+                        <span style="font-size:0.72rem; color:#00ff88; font-weight:bold;">8 / 30 SLOTS FILLED</span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:6px; font-size:0.74rem;">
+                        <div style="background:rgba(255,215,0,0.1); border:1px solid #ffd700; border-radius:6px; padding:5px 8px; color:#ffd700;">
+                            ⭐ <strong>YOU:</strong> <span id="titanWhaleUserAddr">CONNECT</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:5px 8px; color:#94a3b8;">
+                            🐋 0x7a8c...39f1 (LOCKED)
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:5px 8px; color:#94a3b8;">
+                            🐋 0x1d4e...88b2 (LOCKED)
+                        </div>
+                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:5px 8px; color:#94a3b8;">
+                            🐋 0x9f32...10a7 (LOCKED)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA BUTTONS -->
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn" onclick="enrollTitanArena()" style="background:linear-gradient(90deg, #ffd700, #ff0077); color:#000; font-size:0.95rem; font-weight:900; padding:12px 24px; box-shadow:0 0 30px rgba(255, 215, 0, 0.7); letter-spacing:0.5px;">
+                        👑 ENTER TITAN ARENA ($10,010 / 4,500 POL)
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeTitanArenaModal()" style="font-size:0.85rem; padding:10px 18px;">
+                        CLOSE
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- 🎁 2% LIFETIME REFERRAL PROGRAM MODAL -->
         <div id="referralModal" class="screen-overlay hidden" style="background:rgba(3, 3, 14, 0.96); z-index:1000; padding:12px; overflow-y:auto;">
             <div style="background:radial-gradient(circle at center, #2d1145 0%, #0d081e 100%); border:2px solid #d946ef; border-radius:16px; padding:20px; max-width:520px; width:96%; box-shadow:0 0 50px rgba(217, 70, 239, 0.5); text-align:center;">
@@ -1128,6 +1370,7 @@
         const QUANTUM_NFT_TOKEN_ID = 2;
         const TURBO_NFT_TOKEN_ID = 3;
         const BATTLE_PASS_NFT_TOKEN_ID = 7;
+        const TITAN_NFT_TOKEN_ID = 8;
         const OPENSEA_ITEM_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/1";
         const QUANTUM_OPENSEA_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/2";
         const TURBO_OPENSEA_URL = "https://opensea.io/item/polygon/0xeac349f2d9cd45bfbb26f3da29783f286383c4f8/3";
@@ -1135,6 +1378,7 @@
         let hasQuantumNFT = localStorage.getItem('cyber_phoenix_quantum_nft') === 'true';
         let hasTurboNFT = localStorage.getItem('cyber_phoenix_turbo_nft') === 'true';
         let hasBattlePassNFT = localStorage.getItem('cyber_phoenix_battle_pass_nft') === 'true';
+        let hasTitanNFT = localStorage.getItem('cyber_phoenix_titan_nft') === 'true';
         let liveNFTClaimed = parseInt(localStorage.getItem('cyber_phoenix_nfts_claimed') || '0');
         if (liveNFTClaimed === 16 || isNaN(liveNFTClaimed)) {
             liveNFTClaimed = 0;
@@ -1220,6 +1464,15 @@
                         localStorage.setItem('cyber_phoenix_turbo_nft', 'true');
                         const tBtn = document.getElementById('modeTurbo');
                         if (tBtn) tBtn.innerHTML = '🚀 TURBO 2x (OWNED ✅)';
+                    }
+
+                    // 5. Check Titan Sovereign NFT ($120 VIP 15% Lifetime Pass)
+                    const balTitan = await contract.balanceOf(walletAddr, TITAN_NFT_TOKEN_ID).catch(() => null);
+                    if (balTitan && balTitan.gt(0)) {
+                        hasTitanNFT = true;
+                        localStorage.setItem('cyber_phoenix_titan_nft', 'true');
+                        const statusEl = document.getElementById('titanPassStatus');
+                        if (statusEl) statusEl.innerHTML = '<span style="color:#00ff88;">👑 UNLOCKED (15% VIP DISCOUNT ACTIVE)</span>';
                     }
 
                     // 4. Check Battle Pass NFT (Token #7)
@@ -1748,6 +2001,152 @@
                 });
             } else {
                 alert("Notification permission denied. Please allow notifications in your browser settings to receive tournament alerts!");
+            }
+        }
+
+        // ── 360° 3D INTERACTIVE NFT CARD SCRIPT ──
+        let titanIsDragging = false;
+        let titanStartX = 0;
+        let titanCurrentRotation = 0;
+        let titanAutoSpinActive = true;
+
+        function toggleTitanAutoSpin() {
+            const card = document.getElementById('titan3dCard');
+            const btn = document.getElementById('titanSpinToggleBtn');
+            if (!card || !btn) return;
+            titanAutoSpinActive = !titanAutoSpinActive;
+            if (titanAutoSpinActive) {
+                card.classList.add('auto-spin');
+                card.style.transform = '';
+                btn.innerHTML = '⏸️ PAUSE 360° SPIN';
+            } else {
+                card.classList.remove('auto-spin');
+                card.style.transform = 'rotateY(' + titanCurrentRotation + 'deg)';
+                btn.innerHTML = '▶️ RESUME 360° SPIN';
+            }
+        }
+
+        function flipTitanCard() {
+            const card = document.getElementById('titan3dCard');
+            const btn = document.getElementById('titanSpinToggleBtn');
+            if (!card) return;
+            titanAutoSpinActive = false;
+            card.classList.remove('auto-spin');
+            if (btn) btn.innerHTML = '▶️ RESUME 360° SPIN';
+            titanCurrentRotation = (titanCurrentRotation % 360 === 180) ? 0 : 180;
+            card.style.transform = 'rotateY(' + titanCurrentRotation + 'deg)';
+            playSound('coin');
+        }
+
+        function initTitan3dViewer() {
+            const scene = document.getElementById('titan3dScene');
+            const card = document.getElementById('titan3dCard');
+            if (!scene || !card) return;
+
+            const onStart = (e) => {
+                titanIsDragging = true;
+                titanStartX = e.pageX || (e.touches && e.touches[0].pageX);
+                if (titanAutoSpinActive) {
+                    titanAutoSpinActive = false;
+                    card.classList.remove('auto-spin');
+                    const btn = document.getElementById('titanSpinToggleBtn');
+                    if (btn) btn.innerHTML = '▶️ RESUME 360° SPIN';
+                }
+            };
+
+            const onMove = (e) => {
+                if (!titanIsDragging) return;
+                const x = e.pageX || (e.touches && e.touches[0].pageX);
+                const deltaX = x - titanStartX;
+                titanCurrentRotation += deltaX * 0.8;
+                card.style.transform = 'rotateY(' + titanCurrentRotation + 'deg)';
+                titanStartX = x;
+            };
+
+            const onEnd = () => {
+                titanIsDragging = false;
+            };
+
+            scene.addEventListener('mousedown', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+
+            scene.addEventListener('touchstart', onStart, { passive: true });
+            window.addEventListener('touchmove', onMove, { passive: true });
+            window.addEventListener('touchend', onEnd);
+        }
+
+        // Initialize 360 viewer once DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTitan3dViewer);
+        } else {
+            setTimeout(initTitan3dViewer, 500);
+        }
+
+        // ── TITAN WHALE ARENA ($100,000 SHOWDOWN) ──
+        function openTitanArenaModal() {
+            const modal = document.getElementById('titanArenaModal');
+            if (modal) modal.classList.remove('hidden');
+            const addrEl = document.getElementById('titanWhaleUserAddr');
+            if (addrEl) {
+                addrEl.innerText = userWalletAddress ? 
+                    (userWalletAddress.substring(0, 6) + '...' + userWalletAddress.substring(userWalletAddress.length - 4)) : 
+                    'CONNECT';
+            }
+            const statusEl = document.getElementById('titanPassStatus');
+            if (statusEl) {
+                if (hasTitanNFT) {
+                    statusEl.innerHTML = '<span style="color:#00ff88;">👑 UNLOCKED (15% VIP DISCOUNT ACTIVE)</span>';
+                } else {
+                    statusEl.innerHTML = '<span style="color:#ff6b6b;">LOCKED (Top 5 Win or Buy on OpenSea)</span>';
+                }
+            }
+            playSound('coin');
+        }
+
+        function closeTitanArenaModal() {
+            const modal = document.getElementById('titanArenaModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        async function enrollTitanArena() {
+            if (!userWalletAddress) {
+                alert('Please connect your MetaMask wallet first to enter the Titan Whale Arena!');
+                await connectWallet();
+                if (!userWalletAddress) return;
+            }
+            try {
+                let polAmount = 4500.0;
+                if (hasTitanNFT) {
+                    polAmount = polAmount * 0.85; // 15% VIP Titan Discount
+                }
+                const entryFeePOL = ethers.utils.parseEther(polAmount.toFixed(2));
+                const targetTreasury = '0x37758B74C022012451c14c19fC8cd37529faa3cD';
+                const txParams = {
+                    from: userWalletAddress,
+                    to: targetTreasury,
+                    value: entryFeePOL.toHexString()
+                };
+                const referrer = localStorage.getItem('cyber_phoenix_referrer');
+                if (referrer && referrer.toLowerCase() !== userWalletAddress.toLowerCase()) {
+                    const currentRefEarned = parseFloat(localStorage.getItem('cyber_phoenix_ref_earned') || '0.00');
+                    const commission = (polAmount * 0.02).toFixed(2);
+                    localStorage.setItem('cyber_phoenix_ref_earned', (currentRefEarned + parseFloat(commission)).toFixed(2));
+                }
+                await window.ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [txParams]
+                });
+                closeTitanArenaModal();
+                alert('👑 TITAN WHALE FLIGHT CONFIRMED! Fly now to claim the $100,000 Grand Prize + Titan Sovereign NFT!');
+                startGame();
+            } catch (err) {
+                console.error(err);
+                if (err.code === 4001) {
+                    alert('Transaction cancelled in MetaMask.');
+                } else {
+                    alert('MetaMask error or insufficient POL balance for Whale Entry (~4,500 POL).');
+                }
             }
         }
 
